@@ -1,201 +1,134 @@
-# Handoff: Mapa de Impacto Territorial FMCN 2025
+# Handoff: Atlas FMCN — Case Study & Docs Subsite for asalamanca.work
 
 ## Overview
 
-A single-page interactive impact map for the **Fondo Mexicano para la Conservación de la Naturaleza (FMCN)**. It communicates the territorial footprint of FMCN's 2025 portfolio: 17 conservation programs plotted on a map of Mexico as proportional bubbles, with an editorial side panel showing per-program profiles (KPIs, funding, comparison chart), global portfolio statistics, intervention-type filters that double as a color legend, and a full ES/EN language toggle.
+A new section for **asalamanca.work** (repo: `codeatelier0/asite`) that showcases Miguel Ángel Salamanca's Product Owner work on the **"Atlas FMCN"** project (interactive funding-impact map for the Fondo Mexicano para la Conservación de la Naturaleza). It consists of:
 
-Design inspiration: clean, editorial, professional — in the spirit of Mapbox Stories / National Geographic interactive reports.
+1. A **case study cover page** — executive summary, role, deliverables, embedded live demo of the map prototype, featured doc entries, and a full document index.
+2. A **navigable docs subsite** — 15 documentation pages (functional spec, user stories, data model, acceptance criteria, stack, roadmap, glossary, content/data docs, and 3 AI design prompts) with grouped sidebar TOC, breadcrumbs, prev/next pagination, and copy-to-clipboard on code/prompt blocks.
+3. The **map prototype** itself (`mapa_impacto_fmcn.html`), embedded in the cover via `<iframe>` and linkable as a standalone demo.
+
+Both ES/EN via the portfolio's existing language toggle (shared `localStorage` key `mas-lang`).
 
 ## About the Design Files
 
-The file in this bundle (`mapa_impacto_fmcn.html`) is a **design reference created in HTML** — a static, self-contained prototype showing intended look and behavior. It is **not production code to copy directly**.
+These files are **design references created in HTML** — working prototypes showing intended look and behavior, not necessarily production code to ship as-is.
 
-The production target (per the project's `Prompt mapa.md` / `promptsistema.md`) is a **Django + HTMX + PostGIS** application. The task is to recreate this design there:
+**However, note:** the case study deliberately uses the *exact same stack and conventions* as the existing `asite` repo (React 18 UMD + Babel standalone, `.jsx` files loaded via `<script type="text/babel">`, content in a global data object, components exported via `Object.assign(window, …)`). This makes the files **near drop-in** for that repo:
 
-- The prototype's layout and Leaflet map become `templates/mapa/index.html` + `static/mapa/js/mapa.js`.
-- Filter/panel interactions implemented here in vanilla JS should be implemented in production as **HTMX fragments served by Django**.
-- Alternatively, the prototype can be embedded as-is via `<iframe>` during a transition period — it works opened directly in a browser with no backend (all data is hardcoded).
-- Leaflet plays the same role in both contexts (map, markers, popups); Chart.js is the sanctioned complementary chart component (stack spec §6.3).
+- Copy the `atlas-fmcn/` folder into the repo root.
+- Keep `mapa_impacto_fmcn.html` at the repo root (the cover iframe references it as `../mapa_impacto_fmcn.html`).
+- Add a project card in `data.jsx` → `work.projects` pointing to `atlas-fmcn/Atlas FMCN — Case Study.html` (consider renaming the file to something URL-safe, e.g. `atlas-fmcn/index.html`, and updating the iframe/breadcrumb relative paths accordingly).
 
-If no environment exists yet, choose the framework that fits the production spec above.
+If the site ever migrates to a static-site generator (Astro/Next/Hugo), recreate these designs there instead, generating one static route per document (see "Known gaps" below).
 
 ## Fidelity
 
-**High-fidelity (hifi).** Colors, typography, spacing, copy and interactions are final and follow the FMCN institutional brand (`visualbrand.md`). Recreate the UI pixel-perfectly. Two palettes coexist and **must not be mixed**:
+**High-fidelity (hifi).** All tokens, components and layout patterns are lifted directly from the live `asite` codebase (`index.html`, `components.jsx`) — colors, typography, chips, cards, kickers, grid background, language toggle are pixel-identical to the portfolio. Recreate/integrate without restyling.
 
-1. **Institutional UI chrome palette** (header, footer, buttons, badges, links).
-2. **Semantic map-category palette** for `tipo_intervencion` (a fixed encoding from `Prompt mapa.md` / `4_datastr.md` §4.1).
+Per the owner's decision: **no FMCN brand accents** inside the case study — 100% portfolio identity. (FMCN colors appear only *inside* the embedded map prototype, which has its own institutional design system — see `mapa_impacto_fmcn.html` and its separate handoff README if available.)
+
+## ⚠ Content status — placeholders
+
+The 15 document bodies in `atlas-content.jsx` are **placeholders**. The real markdown sources live in the owner's local folder (`/home/miso/Documents/Data Engineer/FMCN/`): `1_resumen.md` … `8_glosario.md`, `Contenido.md`, `Dataimpacto.md`, `Fuentedatos.md`, `visualbrand.md`, `Prompt mapa.md`, `Prompt ux.md`, `promptsistema.md`.
+
+To finish: paste each file's full content into `ATLAS_DOCS_BODIES` in `atlas-content.jsx`, keyed by slug (mapping table is in `atlas-data.jsx` → `ATLAS.docs`, fields `slug` ↔ `file`). Regular docs take markdown (GFM tables supported via marked.js); the three `prompt: true` docs take raw preformatted text.
 
 ## Screens / Views
 
-There is a single screen with two panel states.
+### 1. Case study cover (`#/`)
 
-### Layout (overall)
+- **Sticky top bar**: breadcrumbs (`asalamanca.work / proyectos / atlas-fmcn`, JetBrains Mono 12px, separator `/`) left; EN/ES toggle right. Background `rgba(14,16,20,0.85)` + `backdrop-filter: blur(8px)`, bottom border `--line`.
+- **Hero** (padding `110px clamp(28px,6vw,90px) 70px`, grid background with radial mask):
+  - Glowing accent dot (8px, `box-shadow: 0 0 12px 2px rgba(77,141,255,.30)`) + kicker `/ case study` (mono, 12.5px, uppercase, letter-spacing .16em, `#4d8dff`).
+  - Title "Atlas FMCN" — Space Grotesk 700, `clamp(52px, 8vw, 100px)`, line-height .95, letter-spacing −.04em.
+  - Mono subtitle (accent color) + blurb (muted `#8b94a3`, max-width 640px, first-person narrative).
+  - Chips row (6 tags: Product Ownership, Especificación funcional, Django + HTMX, PostGIS, Leaflet, Diseño asistido por IA) — mono 11px, border `rgba(255,255,255,0.14)`, radius 6px.
+  - CTAs: solid accent button "Explorar la documentación →" (mono 14px, radius 9px, padding 14px 24px, hover lift + glow) and ghost link "// ver demo interactiva".
+  - **Meta strip**: 4-cell grid (rol / cliente / periodo / entregable), 1px gap on `--line` background, radius 14px, cells `#14171d`, dt mono 10.5px uppercase faint, dd 13.5px.
+- **Section / 01 — El encargo**: 3-card grid (`exp-cards` pattern: 1px gaps, radius 16px, cards `#0e1014`, hover `#181c23`): El problema / Mi rol / Lo que entregué. Card: mono number accent, h3 23px, body 15.5px muted.
+- **Section / 02 — Demo interactiva** (`id="demo"`): browser-chrome frame (radius 14px, border `--line-strong`, bar with three 8px dots + mono label `atlas-fmcn · prototipo v1 — mapa de impacto` + right-aligned "Abrir en pestaña completa ↗" link) containing a 640px-tall `<iframe>` of `../mapa_impacto_fmcn.html` (lazy-loaded).
+- **Section / 03 — Entradas destacadas**: 2×2 `work-card` grid linking to historias-de-usuario, modelo-de-datos, criterios-de-aceptacion, roadmap. Card: category kicker + ↗ arrow (hover: accent + translate), h4 24px, desc 15px muted, footer CTA 12.5px faint→accent.
+- **Section / 04 — Toda la documentación**: 4 groups (Especificación funcional · Implementación · Contenido y datos · Prompts de diseño), each a `col-head` mono uppercase accent label + row list. Row grid: `170px 220px 1fr 24px` (source filename mono faint / title 16.5px semibold / description 13.5px muted / → arrow), 1px top borders, hover `#181c23`.
+- **Footer**: `← asalamanca.work` link + © line, mono 12px faint, top border.
 
-Full-viewport flex column (`100vh`, no body scroll on desktop):
+### 2. Doc page (`#/doc/<slug>`)
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  HEADER: logo | title + ES/EN | filter pills (right)     │
-├───────────────────────┬─────────────────────────────────┤
-│   LEAFLET MAP         │   SIDE PANEL                     │
-│   flex: 0 0 65%       │   flex: 0 0 35%, own scroll      │
-├───────────────────────┴─────────────────────────────────┤
-│  GLOBAL STATS BAR (full width, 52px, fixed bottom)       │
-└─────────────────────────────────────────────────────────┘
-```
-
-Responsive: at `max-width: 768px` the map/panel columns stack vertically (map on top, full width, `55vh` tall; panel below). Header pills wrap to a second row; footer wraps; body becomes scrollable.
-
-### Component 1 — Header
-
-- Background `#FFFFFF`, `border-bottom: 1px solid #E5E7EB`, padding `10px 20px`, flex row, `gap: 16px`.
-- **Logo placeholder** (left): 40×40px, background `#0F6E56`, border-radius 8px, text "FMCN" in white, Lato 700 11px, letter-spacing 0.5px. *Replace with the real FMCN logo asset in production.*
-- **Title block** (center-aligned text): `"Impacto territorial 2025"` — Lato 600, 18px, `#111827`; subtitle `"Fondo Mexicano para la Conservación de la Naturaleza"` — Open Sans 400, 12px, `#6B7280`.
-- **Language toggle** next to title: two buttons `ES` / `EN` inside a 20px-radius bordered capsule (`1px solid #E5E7EB`). Active button: background `#185FA5`, white text; inactive: transparent, `#6B7280`. Font: Lato 700 12px. Switching re-renders every visible string (UI labels, pills, panel, footer, tooltips, region labels) and updates `document.documentElement.lang`.
-- **Filter pills** (right, `margin-left: auto`, flex `gap: 8px`, wrap): one per `tipo_intervencion` value plus `Todos`. Each typed pill carries a 9px color dot — the pills double as the map's color legend.
-  - Pill base: `border: 1px solid #D1D5DB`, background white, color `#6B7280`, border-radius 20px, padding `6px 14px`, Lato 600 12.5px, transition `all .2s ease`.
-  - Hover: border and text turn `#0F6E56`.
-  - Active (`aria-pressed="true"`): background `#0F6E56`, border `#0F6E56`, white text; the color dot gets a `1.5px` white outline.
-
-### Component 2 — Leaflet map
-
-- Tile layer: **CartoDB Positron** (`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`, subdomains `abcd`), OSM + CARTO attribution.
-- Initial view: center `lat 23.6345, lng -102.5528`, zoom `5`.
-- **Markers**: circular `divIcon` bubbles, radius proportional to hectares (discrete prototype scale — production uses a continuous scale on the same metric `ha_protegidas + ha_manejo_sostenible`):
-  - `ha ≤ 10,000` → r = 8px
-  - `10k < ha ≤ 100k` → r = 12px
-  - `100k < ha ≤ 500k` → r = 16px
-  - `ha > 500k` → r = 22px
-  - Bubble style: `border-radius: 50%`, `border: 1.5px solid rgba(255,255,255,.9)`, `box-shadow: 0 0 0 1px rgba(0,0,0,.12)`, fill = category color.
-- **Category colors** (`tipo_intervencion`, fixed semantic encoding — do not reinterpret):
-
-  | Enum value | Color | Label (ES) |
-  |---|---|---|
-  | `anp` | `#0F6E56` | ANP federales |
-  | `cuenca` | `#185FA5` | Cuencas hidrográficas |
-  | `costero` | `#3C3489` | Costero-marino |
-  | `paisaje` | `#BA7517` | Paisaje productivo |
-  | `especie` | `#993C1D` | Especie / fondo patrimonial |
-
-- **Hover**: bubble scales to 1.18 (`transform`, `.2s ease`) and a floating tooltip shows program name (Lato, 13px, bold) + headline figure (hectares, or beneficiaries if hectares are N/D). Tooltip: white, `1px solid #E5E7EB`, radius 8px, no shadow, padding `7px 11px`.
-- **Click**: side panel switches to that program's profile; the selected bubble gets a **pulsing outer ring** — `::after` pseudo-element, `inset: -7px`, 2px border in the category color, keyframe animation scaling 0.8 → 1.25 while fading out, 1.6s ease-out infinite. (This indicates *selection*; it is distinct from the production "Semáforo de KPI" trend recoloring, which is not part of this prototype.)
-- **Keyboard**: markers are focusable (Leaflet `keyboard: true`, `alt` set to program name); Enter activates.
-- **Optional layer toggle** (custom Leaflet control, top-right): "Regiones" button (white, 8px radius; active state background `#185FA5`, white text) toggles 6 semi-transparent polygons of Mexico's biogeographic regions — fill `rgba(0,0,0,0.06)`, 1px stroke `rgba(0,0,0,0.18)`, non-interactive, each with an uppercase gray 11px label. **This layer is exploratory prototype-only** and does not map 1:1 to any production Zone-3 layer; the polygon coordinates are rough approximations.
-
-### Component 3 — Side panel (right, 35%, own scroll, padding 24px)
-
-**Default state (no selection / after filtering):** welcome card —
-- Title: "Conservar el patrimonio natural de México" — Lato 700, 24px.
-- Intro paragraph (Open Sans 14px / 1.6, `#6B7280`): FMCN, 26 active projects, 53.5M ha financed, 369 local organizations, 425 priority species.
-- 4 global KPIs in a 2×2 grid (cards: background `#F9FAFB`, `1px solid #E5E7EB`, radius 8px, padding `14px 16px`; value Lato 700 22px; label Open Sans 12px `#6B7280`):
-  - **53.5M** ha protegidas · **26** proyectos activos · **369** organizaciones locales · **425** especies prioritarias
-- Hint line (13px, secondary) prompting map selection.
-- Link `"Conoce más ↗"` → `https://fmcn.org` (color `#185FA5`, Open Sans 600, underline on hover).
-
-**Active state (program selected):** vertical card stack, `gap: 18px` —
-1. "← Volver al resumen" text button (`#185FA5`, 13px) returning to welcome state and clearing selection.
-2. **Program header** (bottom border `#E5E7EB`): 14px color dot + program name (Lato 700, 22px); category label in the category color (uppercase, 11.5px, letter-spacing .06em); states/region line (13px, `#6B7280`).
-3. **Editorial description**: 2–3 lines, Open Sans 13px / 1.6.
-4. **KPIs 2×2 grid** (same card style as welcome): Hectáreas | Personas | Organizaciones | Especies. Missing values render literally as `N/D`; numbers use thousands separators.
-5. **Financiamiento badge**: background `#a7a337` (institutional olive-yellow), text `#111827`, border-radius 20px (same radius as header pills), padding `5px 14px`, Open Sans 600 12.5px.
-6. **Mini bar chart** (Chart.js, 120px tall): horizontal bars comparing this program's hectares vs the portfolio average (mean of programs with `ha > 0`). **Logarithmic x-axis** — portfolio values span 1,260 to 98,000,000 ha, unreadable on a linear scale. Program bar uses the category color; average bar `#D1D5DB`; bar thickness 22px, radius 4; ticks abbreviated (`1k`, `1M`). If the program has no hectare data, show an italic note instead of the chart.
-7. **CTA button** `"Ver ficha completa ↗"`: full-width, background `#0F6E56` (hover `#0c5a47`), white, Lato 700 14px, radius 8px, padding `12px 16px`. Currently fires `console.log('abrir ficha: ' + id)` — **placeholder for future routing** to the full program detail page.
-
-All section labels ("KPIs", "Financiamiento", chart caption) use: Lato 700, 11.5px, uppercase, letter-spacing .08em, `#6B7280`.
-
-### Component 4 — Global statistics bar (footer)
-
-- Background `#0F6E56`, white text, height 52px, flex row centered.
-- 5 metrics separated by vertical dividers (`1px solid rgba(255,255,255,.25)`), each: number (Lato 700, 17px) + label (Open Sans 12px, 85% opacity):
-  - `53.5M ha financiadas` · `26 proyectos` · `3,189 donativos` · `125,661 personas` · `232 ANP federales`
-- These reflect the **full 26-project 2025 portfolio**, not just the 17 mapped programs.
+- **Fixed sidebar** (292px, scrollable, `rgba(14,16,20,0.85)` + blur, right border):
+  - Brand block: "MS" mark (42px, radius 10px, mono accent, hover glow) + "ATLAS FMCN / DOCUMENTACIÓN" mono 11px label; "← Volver al case study" link below.
+  - TOC: 4 groups with mono uppercase faint labels; doc links 14px muted, hover text, **active = accent + 16px horizontal dash at left −28px** (portfolio's `navlink.active::before` pattern).
+  - Footer: EN/ES toggle + © (mono 11px faint).
+- **Main column** (margin-left 292px, max-width 880px content):
+  - Breadcrumbs (now 5 levels: `asalamanca.work / proyectos / atlas-fmcn / <slug>`).
+  - Group kicker + doc title (Space Grotesk 700, `clamp(36px,4.6vw,58px)`).
+  - Meta line (mono 12px faint): `Archivo fuente: <file>`; in EN also "Original document in Spanish."
+  - **Markdown body** (marked.js, GFM): h2 with bottom border; tables with mono uppercase accent `th`, `--line` row borders, row hover; blockquotes with 2px accent left border on `#181c23` panel, radius `0 10px 10px 0`; inline code mono 0.85em on `#1d222b` w/ light-blue `#a8c7ff`; `pre` blocks on `#181c23`, radius 12px, **auto-injected "Copiar" button** top-right (mono 11px, hover accent, flips to "Copiado ✓" for 1.6s).
+  - **Prompt pages** (`prompt: true`): accent-bordered intro note + single `<pre>` (white-space pre-wrap, mono 13px/1.75, radius 14px, top padding 54px) with a **"Copiar prompt completo"** button pinned top-right.
+  - **Prev/next pager**: 2-col grid above 80px top margin + border; cards radius 12px with uppercase mono direction label (faint→accent on hover) + doc title 17px; next card right-aligned.
 
 ## Interactions & Behavior
 
-- **Filter pills**: activating a `tipo_intervencion` pill dims all non-matching markers to `opacity 0.15` (production `mapa.js` uses 0.1 for its Zone-2 filters — same attenuation principle); matching markers stay at opacity 1.0 and scale up slightly (1.18). The side panel resets to the welcome state and any selection is cleared. `Todos` restores everything.
-- **Marker click / Enter** → select program, render profile panel, pulse ring on the marker, panel scrolls to top.
-- **Language toggle** → re-renders all strings, pills, footer, tooltips, region labels and the open panel; chart labels re-localize.
-- **Transitions**: `0.2s ease` on all hover/selection states (pills, markers, buttons, language toggle). The pulse ring is the only looping animation.
-- **No fetch/XHR/database**: all data lives in JS constants in the file. The only network dependencies are CDNs (Leaflet 1.9.4, Chart.js 4.x, Google Fonts) and CARTO tiles.
+- **Routing**: hash-based — `#/` cover, `#/doc/<slug>` docs. Unknown slugs fall back to cover. `hashchange` listener; scroll resets to top on doc change; `document.title` updates per page (localized).
+- **Language**: single EN/ES toggle, persisted to `localStorage["mas-lang"]` (same key as the portfolio → language carries across the whole site). UI chrome and cover narrative are fully bilingual; doc bodies remain Spanish (original documents), with an explanatory note shown in EN mode.
+- **Copy-to-clipboard**: `navigator.clipboard.writeText` with `execCommand` fallback; 1.6s "Copiado ✓" confirmation.
+- **Hovers**: 0.2–0.3s ease transitions throughout (cards lift/tint, arrows translate, links to accent) — matching portfolio timing.
+- **Demo iframe**: `loading="lazy"`; the prototype inside manages its own state (Leaflet map, filters, its own ES/EN toggle).
+- **Responsive** (≤980px): sidebar becomes a static top block with the TOC as a wrapping horizontal list; meta strip 4→2 columns; card grids → 1 column; index rows stack; pager stacks; iframe 520px.
 
 ## State Management
 
-Three pieces of state, all client-side:
-
-| State | Values | Triggers |
+| State | Where | Notes |
 |---|---|---|
-| `filtroActivo` | `"todos"` \| `anp` \| `cuenca` \| `costero` \| `paisaje` \| `especie` | Header pill click. Side effects: marker dim/highlight, panel → welcome, selection cleared. |
-| `programaSeleccionado` | `null` \| program id | Marker click/Enter (set); "Volver" button or any filter change (clear). Side effects: panel render, pulse ring, chart create/destroy. |
-| `lang` | `"es"` \| `"en"` | Language toggle. Side effect: full string re-render. |
+| `route` `{page, slug}` | React state ← `location.hash` | Hash router, no library |
+| `lang` `"es" \| "en"` | React state + `localStorage["mas-lang"]` | Shared with portfolio shell |
+| copy confirmation | local component state / DOM | 1.6s timeout |
 
-The Chart.js instance must be destroyed before re-creating (panel re-renders on every selection/language change).
+No data fetching — all content is bundled in `atlas-data.jsx` (registry + bilingual copy) and `atlas-content.jsx` (doc bodies).
 
-In production these map to HTMX-driven fragment swaps: the filter and selection states become query params / fragment endpoints; `lang` follows the site's i18n mechanism.
+## Design Tokens (identical to asalamanca.work)
 
-## Design Tokens
+| Token | Value |
+|---|---|
+| `--bg` / `--bg-2` | `#0e1014` / `#14171d` |
+| `--panel` / `--panel-2` | `#181c23` / `#1d222b` |
+| `--line` / `--line-strong` | `rgba(255,255,255,0.07)` / `rgba(255,255,255,0.14)` |
+| `--text` / `--muted` / `--faint` | `#eef1f6` / `#8b94a3` / `#565f6e` |
+| `--accent` / `--accent-dim` / `--accent-glow` | `#4d8dff` / `#2a6fdb` / `rgba(77,141,255,0.30)` |
+| Fonts | Space Grotesk 400–700 (display/body) · JetBrains Mono 400–700 (kickers, meta, code) |
+| Radii | 6px chips · 7–9px buttons · 10px mark · 12px pre/pager · 14px frames/meta · 16px card grids |
+| New tokens (this section only) | `--docside: 292px` (docs sidebar) · `--maxw: 880px` (doc content measure) |
 
-### Colors — institutional UI chrome (`visualbrand.md`)
-| Token | Value | Use |
-|---|---|---|
-| Verde/turquesa (primary accent) | `#0F6E56` | Logo block, active pills, CTA button, footer background |
-| Azul petróleo | `#185FA5` | Links, language toggle active, "Regiones" toggle active, "Volver" |
-| Amarillo-oliva | `#a7a337` | Financiamiento badge background |
-| Fondo neutro | `#F9FAFB` | Page background, KPI cards |
-| Blanco | `#FFFFFF` | Header, panel, pills |
-| Texto primario | `#111827` | Headings, body, badge text |
-| Texto secundario | `#6B7280` | Subtitles, labels, inactive pills |
-| Borde | `#E5E7EB` | All separators and card borders |
+Type scale: cover title clamp(52–100px) · doc title clamp(36–58px) · section titles clamp(34–54px) · card h3/h4 23–24px · body 16.5–17px · meta/mono 11–14px.
 
-Contrast: all text/background pairs meet WCAG AA (≥ 4.5:1).
+## SEO
 
-### Colors — map categories (semantic, fixed)
-`#0F6E56` anp · `#185FA5` cuenca · `#3C3489` costero · `#BA7517` paisaje · `#993C1D` especie
+Implemented: `<title>`, `meta description`, OpenGraph (`og:title`, `og:description`, `og:type`) on the HTML shell; per-route `document.title` updates client-side.
 
-### Typography (Google Fonts)
-- **Lato** 600/700 — headings, buttons, pills, KPI values, stat numbers.
-- **Open Sans** 400/600 — body, labels, badges, tooltips.
-- Scale: panel title 24px · program name 22px · header title 18px · body 14px · descriptions/states 13px · pills 12.5px · subtitle/labels 12px · section labels 11.5px uppercase · region labels 11px.
-
-### Radii, borders, shadows, motion
-- Border-radius: **8px** cards/buttons/tooltips · **20px** pills/badges/language toggle · **50%** bubbles/dots.
-- No decorative shadows; zones separated with `1px solid #E5E7EB` only. (Sole exception: the 1px dark ring on map bubbles for contrast against tiles.)
-- Transitions: `0.2s ease`. Pulse keyframe: 1.6s ease-out infinite.
-- Spacing: header padding 10px 20px · panel padding 24px · card stack gap 18px · KPI grid gap 10px · pill gap 8px.
+**Known gap:** the original brief asks for static routes and per-page OG tags (`/proyectos/atlas-fmcn/...`). A hash-router SPA cannot provide per-document OG/meta for crawlers. If per-page SEO matters, generate one static HTML page per document at build time (or migrate to an SSG) — the component/data structure here maps cleanly onto that (registry in `atlas-data.jsx` = route manifest).
 
 ## Accessibility
 
-- `aria-pressed` on all toggles (pills, ES/EN, Regiones); `aria-label` on filter pills, region toggle, and the "Ver ficha completa" button.
-- Full keyboard operation: pills/buttons are native `<button>`s; map markers focusable with Enter activation.
-- Panel container has `aria-live="polite"` so selection changes are announced.
-- `document.documentElement.lang` tracks the active language.
-
-## Data
-
-The `programas` array (17 markers; CONECTA and ORIGEN share one) is hardcoded in the file, sourced from `Dataimpacto.md` / `Contenido.md`. Field correspondence to the production `Programa` entity (`4_datastr.md` §4.1):
-
-| Prototype field | Production field |
-|---|---|
-| `id` | `programa_id` |
-| `nombre` | `nombre` |
-| `lat`, `lng` | `centroide_lat`, `centroide_lng` |
-| `tipo_intervencion` | `tipo_intervencion` (identical enum) |
-| `ha` | `ha_protegidas + ha_manejo_sostenible` |
-| `financiamiento` | `donante` + `monto_usd` (free text here; gated by `nivel_acceso_financiero` in production) |
-| `estados` | `estados` (descriptive string here; `Array[String]` in production) |
-| `descripcion` / `descripcion_en` | — (editorial text, prototype-only) |
-| `kpis.*` | `ha_protegidas + ha_manejo_sostenible`, `personas_beneficiadas`, `organizaciones_locales`, `especies_prioritarias` |
-
-`color` is derived from `tipo_intervencion` at render time — never stored.
+- Hierarchical headings per page; `nav` landmarks with `aria-label` (breadcrumbs, TOC, pager); `aria-label` on language toggle and copy buttons; all interactive elements are native `<a>`/`<button>`.
+- Contrast on dark bg meets AA for body text (`#eef1f6`, `#8b94a3` on `#0e1014`).
+- If dashboard screenshots are added later, include descriptive `alt` text.
 
 ## Assets
 
-- **FMCN logo**: placeholder only (green square with "FMCN" text). Substitute the real brand asset.
-- **Map tiles**: CartoDB Positron via CDN (requires CARTO attribution).
-- **Fonts**: Lato + Open Sans via Google Fonts CDN.
-- **Region polygons**: rough hand-approximated coordinates, exploratory only — replace with real GeoJSON if the layer is kept.
-- No other images or icons; arrows (↗, ←, ·) are plain text characters.
+- **Fonts**: Google Fonts CDN (Space Grotesk, JetBrains Mono).
+- **Libraries**: React 18.3.1 + Babel standalone (pinned, SRI) — same as the portfolio; marked 12.0.2 for GFM markdown.
+- **Demo**: `mapa_impacto_fmcn.html` (self-contained; Leaflet 1.9.4 + Chart.js 4.4.9 + CARTO tiles via CDN).
+- No images yet. Screenshots of the map prototype can be added to the cover/docs as evidence (owner opted to embed the live demo instead).
 
 ## Files
 
-- `mapa_impacto_fmcn.html` — the complete prototype: all CSS in a single `<style>` block, all data and logic in a single `<script>` block. CDN dependencies: Leaflet 1.9.4 (pinned, SRI), Chart.js 4.4.9, Google Fonts.
+```
+design_handoff_atlas_fmcn/
+├── README.md                              ← this file
+├── mapa_impacto_fmcn.html                 ← map prototype (iframe target; keep at parent level of atlas-fmcn/)
+└── atlas-fmcn/
+    ├── Atlas FMCN — Case Study.html       ← shell: all CSS + CDN scripts (rename to index.html for clean URLs)
+    ├── atlas-data.jsx                     ← registry of 15 docs + bilingual cover/UI copy
+    ├── atlas-content.jsx                  ← doc bodies (⚠ PLACEHOLDERS — paste real .md content here)
+    ├── atlas-components.jsx               ← Cover, DocsSidebar, MarkdownBody, PromptBody, DocPage, Crumbs
+    └── atlas-app.jsx                      ← hash router + language state
+```

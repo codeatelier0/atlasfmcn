@@ -1,0 +1,212 @@
+# -------------------------------------------------------------------
+
+# OS files
+
+# -------------------------------------------------------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# -------------------------------------------------------------------
+
+# Editor / IDE files
+
+# -------------------------------------------------------------------
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Vim / Emacs
+
+*.swp
+*.swo
+*~
+.#*
+
+# -------------------------------------------------------------------
+
+# Environment variables and secrets
+
+# -------------------------------------------------------------------
+
+.env
+.env.*
+!.env.example
+!.env.template
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+private/
+
+# -------------------------------------------------------------------
+
+# Logs
+
+# -------------------------------------------------------------------
+
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -------------------------------------------------------------------
+
+# Dependency directories
+
+# -------------------------------------------------------------------
+
+node_modules/
+vendor/
+
+# -------------------------------------------------------------------
+
+# JavaScript / TypeScript
+
+# -------------------------------------------------------------------
+
+dist/
+build/
+.next/
+.nuxt/
+.svelte-kit/
+astro/
+coverage/
+.nyc_output/
+
+*.tsbuildinfo
+
+# -------------------------------------------------------------------
+
+# Python
+
+# -------------------------------------------------------------------
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+ENV/
+
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+coverage.xml
+htmlcov/
+
+.ipynb_checkpoints/
+
+# -------------------------------------------------------------------
+
+# Go
+
+# -------------------------------------------------------------------
+
+bin/
+*.exe
+*.test
+*.out
+coverage.out
+
+# -------------------------------------------------------------------
+
+# Django / local app files
+
+# -------------------------------------------------------------------
+
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# -------------------------------------------------------------------
+
+# Build artifacts
+
+# -------------------------------------------------------------------
+
+out/
+tmp/
+temp/
+.cache/
+.cache-loader/
+
+# -------------------------------------------------------------------
+
+# Package manager caches
+
+# -------------------------------------------------------------------
+
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# -------------------------------------------------------------------
+
+# Docker / local infrastructure
+
+# -------------------------------------------------------------------
+
+docker-compose.override.yml
+.docker/
+
+# -------------------------------------------------------------------
+
+# AI agent local files: Claude Code / OpenAI Codex
+
+# -------------------------------------------------------------------
+
+# Claude Code - local, machine-specific settings
+
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Claude Code - local runtime/cache/log/session artifacts
+
+.claude/.cache/
+.claude/cache/
+.claude/logs/
+.claude/sessions/
+.claude/transcripts/
+.claude/history/
+.claude/tmp/
+.claude/snapshots/
+
+# Codex - local/project-specific config or runtime state
+
+.codex/
+.codex.local/
+.codex-cache/
+.codex-logs/
+.codex-sessions/
+
+# Codex temporary overrides
+
+AGENTS.override.md
+CLAUDE.md
+AGENTS.md
+.claude/
+
