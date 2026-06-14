@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FMCN — Impacto territorial 2025</title>
+<title>FMCN — Impacto territorial 2025 · Inversión (privado)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -173,6 +173,56 @@
     footer{ flex-wrap:wrap; height:auto; min-height:52px; padding:8px 0; gap:6px 0; }
     .stat-global{ padding:0 14px; }
   }
+
+  /* ====== VARIACIÓN PRIVADA — INVERSIÓN ====== */
+  .badge-vista{
+    background:var(--oliva); color:#111827; font-family:'Lato',sans-serif; font-weight:700;
+    font-size:11px; padding:4px 11px; border-radius:20px; white-space:nowrap; flex:0 0 auto;
+  }
+  .toolbar-privado{
+    background:#FAFAF2; border-bottom:1px solid var(--borde); display:flex; align-items:center;
+    gap:18px; padding:8px 20px; flex:0 0 auto; flex-wrap:wrap; font-size:13px;
+  }
+  .tp-lock{ display:flex; align-items:center; gap:6px; font-family:'Lato',sans-serif; font-weight:700; color:#7c7a2c; font-size:12.5px; }
+  .toolbar-privado .seg{ display:flex; align-items:center; gap:8px; }
+  .toolbar-privado .seg-label{ color:var(--texto-sec); font-size:12px; font-weight:600; }
+  .toolbar-privado .seg-btns{ display:flex; border:1px solid var(--borde); border-radius:20px; overflow:hidden; background:#fff; }
+  .toolbar-privado .seg button{
+    border:none; background:transparent; padding:5px 14px; font-family:'Lato',sans-serif; font-weight:700;
+    font-size:12px; color:var(--texto-sec); cursor:pointer; transition:background .2s ease, color .2s ease;
+  }
+  .toolbar-privado .seg button[aria-pressed="true"]{ background:var(--verde); color:#fff; }
+  .tp-nota{ margin-left:auto; color:var(--texto-sec); font-size:11.5px; font-style:italic; }
+
+  .fmcn-dot.hollow{ box-shadow:none; }
+
+  .acceso-badge{ font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; font-family:'Open Sans',sans-serif; }
+  .acceso-badge.pub{ background:#E7F1EC; color:#0F6E56; }
+  .acceso-badge.priv{ background:#F3F1DC; color:#7c7a2c; }
+  .inv-grid{ display:flex; flex-direction:column; gap:7px; background:var(--fondo); border:1px solid var(--borde); border-radius:8px; padding:12px 14px; }
+  .inv-row{ display:flex; justify-content:space-between; gap:14px; font-size:12.5px; }
+  .inv-k{ color:var(--texto-sec); flex:0 0 auto; }
+  .inv-v{ font-weight:600; text-align:right; }
+  .ha-split{ display:flex; gap:10px; margin-top:8px; }
+  .ha-seg{ flex:1; background:var(--fondo); border:1px solid var(--borde); border-radius:8px; padding:10px 12px; }
+  .ha-num{ font-family:'Lato',sans-serif; font-weight:700; font-size:16px; display:block; line-height:1.1; }
+  .ha-lbl{ font-size:11px; color:var(--texto-sec); }
+
+  .inv-overview .lock{ font-size:12px; }
+  .mec-bar{ display:flex; height:14px; border-radius:20px; overflow:hidden; margin:4px 0 10px; border:1px solid var(--borde); }
+  .mec-seg{ display:block; }
+  .mec-leg{ display:flex; flex-direction:column; gap:5px; }
+  .mec-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; }
+  .mec-name{ flex:1; color:var(--texto); }
+  .mec-n{ font-family:'Lato',sans-serif; font-weight:700; color:var(--texto-sec); }
+  .inv-nota{ font-size:11.5px; color:var(--texto-sec); font-style:italic; margin-top:8px; line-height:1.5; }
+  .lg-dot{ width:11px; height:11px; border-radius:50%; flex:0 0 auto; display:inline-block; }
+
+  .fmcn-legend{ background:#fff; border:1px solid var(--borde); border-radius:8px; padding:10px 12px; font-size:12px; line-height:1.55; box-shadow:0 1px 2px rgba(0,0,0,.06); max-width:240px; }
+  .fmcn-legend .lg-title{ font-family:'Lato',sans-serif; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--texto-sec); margin-bottom:6px; }
+  .fmcn-legend .lg-row{ display:flex; align-items:center; gap:7px; }
+  .fmcn-legend .lg-dot.hollow{ background:transparent; border:2px dashed #9CA3AF; }
+  .fmcn-legend .lg-count{ margin-top:7px; padding-top:7px; border-top:1px solid var(--borde); font-weight:600; color:var(--texto); }
 </style>
 </head>
 <body>
@@ -189,9 +239,29 @@
       <button id="lang-es" aria-pressed="true" onclick="setLang('es')">ES</button>
       <button id="lang-en" aria-pressed="false" onclick="setLang('en')">EN</button>
     </div>
+    <span class="badge-vista" data-i18n="vista">Vista: Privada</span>
   </div>
   <nav class="filtros" id="filtros" aria-label="Filtros por tipo de intervención"></nav>
 </header>
+
+<div class="toolbar-privado" data-screen-label="Toolbar inversión">
+  <span class="tp-lock">🔒 <span data-i18n="tp_titulo">Datos privados de inversión</span></span>
+  <div class="seg">
+    <span class="seg-label" data-i18n="tp_escala">Escala de burbuja</span>
+    <div class="seg-btns" role="group" aria-label="Escala de burbuja">
+      <button type="button" data-escala="ha" aria-pressed="true" data-i18n="escala_ha">Hectáreas</button>
+      <button type="button" data-escala="inversion" aria-pressed="false" data-i18n="escala_inv">Inversión</button>
+    </div>
+  </div>
+  <div class="seg">
+    <span class="seg-label" data-i18n="tp_color">Color</span>
+    <div class="seg-btns" role="group" aria-label="Color de burbuja">
+      <button type="button" data-color="tipo" aria-pressed="true" data-i18n="color_tipo">Tipo</button>
+      <button type="button" data-color="donante" aria-pressed="false" data-i18n="color_donante">Donante</button>
+    </div>
+  </div>
+  <span class="tp-nota" data-i18n="tp_nota">Montos no desagregados provienen de sistemas internos (LOVIS/SISEP).</span>
+</div>
 
 <main>
   <!-- ============ COMPONENTE 2: MAPA ============ -->
@@ -301,8 +371,8 @@ const programas = [
     ha: 53477130, financiamiento: "Fondo patrimonial FMCN",
     estados: "Nacional — de 70 a 95 ANP federales (2026)",
     estados_en: "Nationwide — from 70 to 95 federal protected areas (2026)",
-    descripcion: "Fondo patrimonial de largo plazo que complementa el presupuesto público de CONANP: vigilancia, monitoreo y atención a contingencias en ANP federales.",
-    descripcion_en: "Long-term endowment complementing CONANP's public budget: surveillance, monitoring and contingency response in federal protected areas.",
+    descripcion: "Fondo patrimonial de largo plazo que complementa el presupuesto público de CONANP: vigilancia, monitoreo y atención a contingencias en 70 ANP federales, que cubren el 54% del territorio terrestre protegido y el 34% del marino (2024).",
+    descripcion_en: "Long-term endowment complementing CONANP's public budget: surveillance, monitoring and contingency response across 70 federal protected areas, covering 54% of protected land territory and 34% of marine territory (2024).",
     kpis: { hectareas: "53,477,130", personas: "N/D", organizaciones: "N/D", especies: 425 } },
 
   { id: "cuencas-ciudades", nombre: "Cuencas y Ciudades", lat: 19.9, lng: -99.5,
@@ -350,6 +420,69 @@ const programas = [
     kpis: { hectareas: "N/D", personas: "N/D", organizaciones: "N/D", especies: "N/D" } }
 ];
 
+/* =====================================================
+   EXTENSIÓN PRIVADA — campos financieros (4_datastr.md §4.1: entidad Programa)
+   monto_usd / nivel_acceso_financiero / donante / year_inicio / ha split.
+   Solo ACCIÓN y RÍOS tienen monto_usd público (GCF); el resto es privado
+   (Fondo patrimonial / donantes privados): monto no desagregado en fuente pública.
+   ===================================================== */
+const FINANZAS = {
+  "accion":           { donante:"Green Climate Fund (GCF)",                    donante_cat:"GCF",              monto_usd:25000000, nivel_acceso_financiero:"publico", year_inicio:2021, year_fin:null, ha_protegidas:2000000,  ha_manejo_sostenible:0 },
+  "conecta":          { donante:"GEF · Banco Mundial / Conservation International", donante_cat:"GEF",          monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2019, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:1100000 },
+  "rios":             { donante:"Green Climate Fund (GCF)",                    donante_cat:"GCF",              monto_usd:9000000,  nivel_acceso_financiero:"publico", year_inicio:2020, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:5885 },
+  "cosmos":           { donante:"KfW (Cooperación Alemana)",                   donante_cat:"KfW",              monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2018, year_fin:null, ha_protegidas:1921,     ha_manejo_sostenible:334 },
+  "sierra-mar":       { donante:"KfW / Fondo patrimonial FMCN",               donante_cat:"KfW",              monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2016, year_fin:null, ha_protegidas:500000,   ha_manejo_sostenible:0 },
+  "ojos":             { donante:"Fondo Wyss / Fondo patrimonial FMCN",        donante_cat:"Patrimonial FMCN", monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2016, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:50000 },
+  "monarca":          { donante:"Fondo patrimonial FMCN",                     donante_cat:"Patrimonial FMCN", monto_usd:7500000,  nivel_acceso_financiero:"publico", year_inicio:2000, year_fin:null, ha_protegidas:12367,    ha_manejo_sostenible:0 },
+  "golfo-california": { donante:"Fondo patrimonial FMCN / Lindblad-NatGeo",    donante_cat:"Patrimonial FMCN", monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2001, year_fin:null, ha_protegidas:800000,   ha_manejo_sostenible:0 },
+  "mex3030":          { donante:"GBFF / GEF (Conservation International)",      donante_cat:"GEF",              monto_usd:18500000, nivel_acceso_financiero:"publico", year_inicio:2022, year_fin:null, ha_protegidas:98000000, ha_manejo_sostenible:0 },
+  "csam":             { donante:"FFEM / KfW / The Summit Foundation",          donante_cat:"KfW",              monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2015, year_fin:null, ha_protegidas:120000,   ha_manejo_sostenible:0 },
+  "fanp":             { donante:"Fondo patrimonial FMCN",                     donante_cat:"Patrimonial FMCN", monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:1996, year_fin:null, ha_protegidas:53477130, ha_manejo_sostenible:0 },
+  "cuencas-ciudades": { donante:"Fundación Gonzalo Río Arronte",               donante_cat:"Otros",            monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2002, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:1755 },
+  "c6":               { donante:"GEF / Banco Mundial (FGM / FONNOR)",          donante_cat:"GEF",              monto_usd:19500000, nivel_acceso_financiero:"publico", year_inicio:2013, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:0 },
+  "fomafur":          { donante:"Fondo patrimonial FMCN / U.S. Forest Service",donante_cat:"Patrimonial FMCN", monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2010, year_fin:null, ha_protegidas:1260,     ha_manejo_sostenible:0 },
+  "conserva-aves":    { donante:"National Audubon Society / Global Affairs Canada", donante_cat:"Otros",       monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2022, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:0 },
+  "jorge-de-alba":    { donante:"Alianza AMCROLET",                            donante_cat:"Otros",            monto_usd:null,     nivel_acceso_financiero:"privado", year_inicio:2020, year_fin:null, ha_protegidas:0,        ha_manejo_sostenible:0 }
+};
+programas.forEach(p => Object.assign(p, FINANZAS[p.id]));
+
+/* Catálogo de donantes/mecanismos (agregación de la cartera) */
+const DONANTE_CAT = {
+  "GCF":              { color:"#0F6E56", es:"GCF (Green Climate Fund)", en:"GCF (Green Climate Fund)" },
+  "GEF":              { color:"#185FA5", es:"GEF / GBFF",              en:"GEF / GBFF" },
+  "KfW":              { color:"#a7a337", es:"KfW",                     en:"KfW" },
+  "Patrimonial FMCN": { color:"#3C3489", es:"Patrimonial FMCN",        en:"FMCN endowment" },
+  "Otros":            { color:"#6B7280", es:"Otros donantes",          en:"Other donors" }
+};
+const CAT_ORDER = ["GCF", "GEF", "KfW", "Patrimonial FMCN", "Otros"];
+CAT_ORDER.forEach(c => { DONANTE_CAT[c].n = programas.filter(p => p.donante_cat === c).length; });
+
+function usd0(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+function montoRadio(m){ return Math.max(12, Math.min(26, Math.round(Math.sqrt(m / 1e6) * 4.6))); }
+function estiloMarcador(p){
+  const color = (colorMode === "donante") ? DONANTE_CAT[p.donante_cat].color : p.color;
+  let radius, hollow = false;
+  if (escalaMode === "inversion"){
+    if (p.monto_usd){ radius = montoRadio(p.monto_usd); }
+    else { radius = 8; hollow = true; }
+  } else {
+    radius = radioPorHa(p.ha);
+  }
+  return { radius, color, hollow };
+}
+function iconoPrograma(p){
+  const s = estiloMarcador(p);
+  const d = s.radius * 2;
+  const fill = s.hollow ? "transparent" : s.color;
+  const extra = s.hollow ? ("border:2px dashed " + s.color + ";") : "";
+  return L.divIcon({
+    className: "fmcn-marker",
+    html: '<div class="fmcn-dot' + (s.hollow ? " hollow" : "") + '" style="background:' + fill + '; color:' + s.color + ';' + extra + '"></div>',
+    iconSize: [d, d],
+    iconAnchor: [s.radius, s.radius]
+  });
+}
+
 /* ===== Tipos de intervención (enum + colores, Prompt mapa.md / 4_datastr.md §4.1) ===== */
 const TIPOS = [
   { key: "anp",     color: "#0F6E56" },
@@ -383,7 +516,26 @@ const I18N = {
     ver_ficha: "Ver ficha completa ↗",
     volver: "← Volver al resumen",
     regiones: "Regiones",
+    anp_layer: "ANP federales",
     tt_ha: "ha", tt_personas: "personas beneficiadas",
+    vista: "Vista: Privada",
+    tp_titulo: "Datos privados de inversión",
+    tp_escala: "Escala de burbuja", tp_color: "Color",
+    escala_ha: "Hectáreas", escala_inv: "Inversión",
+    color_tipo: "Tipo", color_donante: "Donante",
+    tp_nota: "Montos no desagregados provienen de sistemas internos (LOVIS/SISEP).",
+    inversion: "Inversión", inv_donante: "Donante / mecanismo", inv_monto: "Monto",
+    inv_vigencia: "Vigencia", inv_mecanismo: "Categoría", inv_desde: "Desde", activo: "activo",
+    monto_nd: "No desagregado en fuente pública", monto_nd_corto: "Monto privado · no desagregado",
+    acc_pub: "Financiero público", acc_priv: "Financiero privado",
+    ha_prot: "ha protección", ha_man: "ha manejo sostenible",
+    inv_cartera: "Inversión de la cartera",
+    inv_pub_doc: "financiamiento público documentado",
+    inv_donativos: "donativos otorgados", inv_mecanismos: "mecanismos de financiamiento",
+    inv_programas: "programas mapeados",
+    inv_nota: "Los montos de fondos patrimoniales y donantes privados no se desagregan en fuentes públicas; disponibles vía LOVIS/SISEP (4_datastr.md §4.5).",
+    lg_tipo: "Tipo de intervención", lg_donante: "Donante / mecanismo",
+    lg_programas: "programas", lg_no_monto: "Monto no desagregado",
     stats: [
       { num: "53.5M", lbl: "ha financiadas" }, { num: "26", lbl: "proyectos" },
       { num: "3,189", lbl: "donativos" }, { num: "125,661", lbl: "personas" },
@@ -411,7 +563,26 @@ const I18N = {
     ver_ficha: "View full profile ↗",
     volver: "← Back to overview",
     regiones: "Regions",
+    anp_layer: "Federal PAs",
     tt_ha: "ha", tt_personas: "people benefited",
+    vista: "View: Private",
+    tp_titulo: "Private investment data",
+    tp_escala: "Bubble scale", tp_color: "Color",
+    escala_ha: "Hectares", escala_inv: "Investment",
+    color_tipo: "Type", color_donante: "Donor",
+    tp_nota: "Undisclosed amounts come from internal systems (LOVIS/SISEP).",
+    inversion: "Investment", inv_donante: "Donor / mechanism", inv_monto: "Amount",
+    inv_vigencia: "Active", inv_mecanismo: "Category", inv_desde: "Since", activo: "active",
+    monto_nd: "Not disaggregated in public source", monto_nd_corto: "Private amount · not disaggregated",
+    acc_pub: "Public financials", acc_priv: "Private financials",
+    ha_prot: "ha protection", ha_man: "ha sustainable mgmt",
+    inv_cartera: "Portfolio investment",
+    inv_pub_doc: "documented public funding",
+    inv_donativos: "grants awarded", inv_mecanismos: "funding mechanisms",
+    inv_programas: "programs mapped",
+    inv_nota: "Endowment and private-donor amounts are not disaggregated in public sources; available via LOVIS/SISEP (4_datastr.md §4.5).",
+    lg_tipo: "Intervention type", lg_donante: "Donor / mechanism",
+    lg_programas: "programs", lg_no_monto: "Amount not disaggregated",
     stats: [
       { num: "53.5M", lbl: "ha financed" }, { num: "26", lbl: "projects" },
       { num: "3,189", lbl: "grants" }, { num: "125,661", lbl: "people" },
@@ -429,6 +600,8 @@ const t = k => I18N[lang][k];
 let filtroActivo = "todos";
 let programaSeleccionado = null;
 let chartRef = null;
+let escalaMode = "ha";    // "ha" | "inversion"
+let colorMode = "tipo";   // "tipo" | "donante"
 
 /* =====================================================
    MAPA LEAFLET
@@ -448,6 +621,10 @@ function radioPorHa(ha){
 }
 
 function tooltipHtml(p){
+  if (escalaMode === "inversion"){
+    const m = p.monto_usd ? (usd0(p.monto_usd) + " USD") : t("monto_nd_corto");
+    return "<strong>" + p.nombre + "</strong><span>" + m + "</span>";
+  }
   const cifra = (p.kpis.hectareas !== "N/D")
     ? p.kpis.hectareas + " " + t("tt_ha")
     : (p.kpis.personas !== "N/D" ? p.kpis.personas.toLocaleString() + " " + t("tt_personas") : "—");
@@ -456,20 +633,25 @@ function tooltipHtml(p){
 
 const marcadores = {};
 programas.forEach(p => {
-  const r = radioPorHa(p.ha);
-  const d = r * 2;
-  const icon = L.divIcon({
-    className: "fmcn-marker",
-    html: '<div class="fmcn-dot" style="background:' + p.color + '; color:' + p.color + ';"></div>',
-    iconSize: [d, d],
-    iconAnchor: [r, r]
-  });
-  const m = L.marker([p.lat, p.lng], { icon: icon, keyboard: true, alt: p.nombre, title: "" });
-  m.bindTooltip(tooltipHtml(p), { className: "fmcn-tooltip", direction: "top", offset: [0, -r - 4], opacity: 1 });
+  const s = estiloMarcador(p);
+  const m = L.marker([p.lat, p.lng], { icon: iconoPrograma(p), keyboard: true, alt: p.nombre, title: "" });
+  m.bindTooltip(tooltipHtml(p), { className: "fmcn-tooltip", direction: "top", offset: [0, -s.radius - 4], opacity: 1 });
   m.on("click", () => seleccionarPrograma(p.id));
   m.addTo(map);
   marcadores[p.id] = m;
 });
+
+/* Recalcula icono + tooltip de cada burbuja según escala/color activos */
+function refrescarMarcadores(){
+  programas.forEach(p => {
+    const m = marcadores[p.id];
+    const s = estiloMarcador(p);
+    m.setIcon(iconoPrograma(p));
+    m.unbindTooltip();
+    m.bindTooltip(tooltipHtml(p), { className: "fmcn-tooltip", direction: "top", offset: [0, -s.radius - 4], opacity: 1 });
+  });
+  actualizarMarcadores();
+}
 
 /* ===== Capa exploratoria: regiones biogeográficas (toggle) ===== */
 const REGIONES_GEOM = [
@@ -518,6 +700,49 @@ const CtrlRegiones = L.Control.extend({
 });
 map.addControl(new CtrlRegiones());
 
+/* ===== Capa: ANP federales (SIG CONANP, polígonos simplificados — demo) ===== */
+const ANP_POLIGONOS = [
+  { nombre: "Reserva de la Biosfera Mariposa Monarca", coords: [[19.70,-100.35],[19.70,-100.15],[19.55,-100.08],[19.42,-100.18],[19.48,-100.38],[19.63,-100.42]] },
+  { nombre: "Reserva de la Biosfera Sian Ka'an", coords: [[20.05,-87.85],[20.05,-87.50],[19.45,-87.40],[19.05,-87.55],[19.10,-87.85],[19.55,-87.95]] },
+  { nombre: "Reserva de la Biosfera El Pinacate y Gran Desierto de Altar", coords: [[32.30,-114.30],[32.30,-112.90],[31.50,-112.90],[31.50,-114.30]] },
+  { nombre: "Reserva de la Biosfera El Triunfo", coords: [[16.05,-93.15],[16.05,-92.75],[15.55,-92.75],[15.55,-93.15]] },
+  { nombre: "Área de Protección de Flora y Fauna Cuatrociénegas", coords: [[27.15,-102.35],[27.15,-101.95],[26.75,-101.95],[26.75,-102.35]] },
+  { nombre: "Reserva de la Biosfera Calakmul", coords: [[18.85,-89.95],[18.85,-89.05],[17.75,-89.05],[17.75,-89.95]] },
+  { nombre: "Reserva de la Biosfera Islas del Golfo de California", coords: [[29.10,-112.50],[29.10,-112.10],[28.70,-112.10],[28.70,-112.50]] },
+  { nombre: "Reserva de la Biosfera Sierra Gorda", coords: [[21.65,-99.65],[21.65,-99.00],[21.05,-99.00],[21.05,-99.65]] },
+  { nombre: "Reserva de la Biosfera Mapimí", coords: [[27.00,-104.00],[27.00,-103.40],[26.30,-103.40],[26.30,-104.00]] },
+  { nombre: "Parque Nacional Arrecife de Puerto Morelos", coords: [[21.00,-86.95],[21.00,-86.75],[20.70,-86.75],[20.70,-86.95]] }
+];
+
+const capaANP = L.layerGroup();
+ANP_POLIGONOS.forEach(a => {
+  L.polygon(a.coords, {
+    color: "#0F6E56", weight: 1.5, fillColor: "#0F6E56", fillOpacity: 0.05
+  }).bindTooltip(a.nombre, { className: "fmcn-tooltip", sticky: true }).addTo(capaANP);
+});
+
+let anpVisible = false;
+const CtrlANP = L.Control.extend({
+  options: { position: "topright" },
+  onAdd: function(){
+    const btn = L.DomUtil.create("button", "ctrl-regiones");
+    btn.id = "btn-anp";
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", "false");
+    btn.setAttribute("aria-label", "Mostrar polígonos de ANP federales (SIG CONANP, simplificado)");
+    btn.title = "Polígonos simplificados — SIG CONANP";
+    btn.textContent = t("anp_layer");
+    L.DomEvent.disableClickPropagation(btn);
+    btn.addEventListener("click", () => {
+      anpVisible = !anpVisible;
+      btn.setAttribute("aria-pressed", String(anpVisible));
+      if (anpVisible) capaANP.addTo(map); else map.removeLayer(capaANP);
+    });
+    return btn;
+  }
+});
+map.addControl(new CtrlANP());
+
 /* =====================================================
    FILTROS (pills del header)
    ===================================================== */
@@ -548,6 +773,7 @@ function aplicarFiltro(key){
   programaSeleccionado = null;
   renderFiltros();
   actualizarMarcadores();
+  renderLegend();
   renderPanelBienvenida();
 }
 
@@ -579,6 +805,17 @@ function renderPanelBienvenida(){
         kpiHtml("26", t("kpi_proyectos")) +
         kpiHtml("369", t("kpi_orgs")) +
         kpiHtml("425", t("kpi_especies")) +
+      '</div>' +
+      '<div class="inv-overview">' +
+        '<div class="seccion-label">' + t("inv_cartera") + ' <span class="lock">🔒</span></div>' +
+        '<div class="kpi-grid">' +
+          kpiHtml("USD 79.5M", t("inv_pub_doc")) +
+          kpiHtml("3,189", t("inv_donativos")) +
+          kpiHtml("5", t("inv_mecanismos")) +
+          kpiHtml("16", t("inv_programas")) +
+        '</div>' +
+        mecanismoLista() +
+        '<p class="inv-nota">' + t("inv_nota") + '</p>' +
       '</div>' +
       '<p style="font-size:13px; color:var(--texto-sec);">' + t("bienvenida_hint") + '</p>' +
       '<a class="enlace" href="https://fmcn.org" target="_blank" rel="noopener">' + t("conoce_mas") + '</a>' +
@@ -619,9 +856,15 @@ function renderPanelPrograma(p){
           kpiHtml(fmtKpi(p.kpis.especies), t("f_especies")) +
         '</div>' +
       '</div>' +
-      '<div>' +
-        '<div class="seccion-label">' + t("financiamiento") + '</div>' +
-        '<span class="badge-fin">' + p.financiamiento + '</span>' +
+      '<div class="inversion-box">' +
+        '<div class="seccion-label">' + t("inversion") + accesoBadge(p) + '</div>' +
+        '<div class="inv-grid">' +
+          invRow(t("inv_donante"), p.donante) +
+          invRow(t("inv_monto"), montoTexto(p)) +
+          invRow(t("inv_mecanismo"), DONANTE_CAT[p.donante_cat][lang] || p.donante_cat) +
+          invRow(t("inv_vigencia"), vigencia(p)) +
+        '</div>' +
+        haSplitHtml(p) +
       '</div>' +
       '<div>' +
         '<div class="seccion-label">' + t("comparativa") + '</div>' +
@@ -723,9 +966,13 @@ function setLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
   renderFiltros();
   renderStats();
+  renderToolbarEstado();
+  renderLegend();
   construirRegiones();
   const btnReg = document.getElementById("btn-regiones");
   if (btnReg) btnReg.textContent = t("regiones");
+  const btnANP = document.getElementById("btn-anp");
+  if (btnANP) btnANP.textContent = t("anp_layer");
   programas.forEach(p => marcadores[p.id].setTooltipContent(tooltipHtml(p)));
   if (programaSeleccionado) {
     renderPanelPrograma(programas.find(p => p.id === programaSeleccionado));
@@ -734,9 +981,68 @@ function setLang(l){
   }
 }
 
+/* =====================================================
+   INVERSIÓN — helpers de panel, toolbar y leyenda
+   ===================================================== */
+function montoTexto(p){ return p.monto_usd ? (usd0(p.monto_usd) + " USD") : t("monto_nd"); }
+function vigencia(p){ return t("inv_desde") + " " + p.year_inicio + " · " + (p.year_fin ? p.year_fin : t("activo")); }
+function accesoBadge(p){
+  const pub = p.nivel_acceso_financiero === "publico";
+  return ' <span class="acceso-badge ' + (pub ? "pub" : "priv") + '">' + (pub ? t("acc_pub") : "🔒 " + t("acc_priv")) + '</span>';
+}
+function invRow(k, v){ return '<div class="inv-row"><span class="inv-k">' + k + '</span><span class="inv-v">' + v + '</span></div>'; }
+function haSplitHtml(p){
+  const prot = p.ha_protegidas || 0, man = p.ha_manejo_sostenible || 0;
+  if (!prot && !man) return "";
+  return '<div class="ha-split">' +
+    '<div class="ha-seg"><span class="ha-num">' + prot.toLocaleString("en-US") + '</span><span class="ha-lbl">' + t("ha_prot") + '</span></div>' +
+    '<div class="ha-seg"><span class="ha-num">' + man.toLocaleString("en-US") + '</span><span class="ha-lbl">' + t("ha_man") + '</span></div>' +
+  '</div>';
+}
+function mecanismoLista(){
+  const seg = CAT_ORDER.map(c => '<span class="mec-seg" style="flex:' + DONANTE_CAT[c].n + '; background:' + DONANTE_CAT[c].color + ';" title="' + (DONANTE_CAT[c][lang] || c) + ': ' + DONANTE_CAT[c].n + '"></span>').join("");
+  const leg = CAT_ORDER.map(c => '<div class="mec-row"><span class="lg-dot" style="background:' + DONANTE_CAT[c].color + ';"></span><span class="mec-name">' + (DONANTE_CAT[c][lang] || c) + '</span><span class="mec-n">' + DONANTE_CAT[c].n + '</span></div>').join("");
+  return '<div class="mec-bar">' + seg + '</div><div class="mec-leg">' + leg + '</div>';
+}
+
+function wireToolbar(){
+  document.querySelectorAll(".toolbar-privado [data-escala]").forEach(b => {
+    b.addEventListener("click", () => { escalaMode = b.getAttribute("data-escala"); renderToolbarEstado(); refrescarMarcadores(); renderLegend();
+      if (programaSeleccionado) renderPanelPrograma(programas.find(p => p.id === programaSeleccionado)); });
+  });
+  document.querySelectorAll(".toolbar-privado [data-color]").forEach(b => {
+    b.addEventListener("click", () => { colorMode = b.getAttribute("data-color"); renderToolbarEstado(); refrescarMarcadores(); renderLegend(); });
+  });
+}
+function renderToolbarEstado(){
+  document.querySelectorAll(".toolbar-privado [data-escala]").forEach(b => b.setAttribute("aria-pressed", String(b.getAttribute("data-escala") === escalaMode)));
+  document.querySelectorAll(".toolbar-privado [data-color]").forEach(b => b.setAttribute("aria-pressed", String(b.getAttribute("data-color") === colorMode)));
+}
+
+const legendControl = L.control({ position: "bottomleft" });
+legendControl.onAdd = function(){ const div = L.DomUtil.create("div", "fmcn-legend"); div.id = "fmcn-legend"; return div; };
+legendControl.addTo(map);
+function visiblesCount(){ return programas.filter(p => filtroActivo === "todos" || p.tipo_intervencion === filtroActivo).length; }
+function renderLegend(){
+  const el = document.getElementById("fmcn-legend");
+  if (!el) return;
+  let rows;
+  if (colorMode === "donante"){
+    rows = CAT_ORDER.map(c => '<div class="lg-row"><span class="lg-dot" style="background:' + DONANTE_CAT[c].color + ';"></span>' + (DONANTE_CAT[c][lang] || c) + ' (' + DONANTE_CAT[c].n + ')</div>').join("");
+  } else {
+    rows = TIPOS.map(tt => '<div class="lg-row"><span class="lg-dot" style="background:' + tt.color + ';"></span>' + t(tt.key) + '</div>').join("");
+  }
+  const extra = (escalaMode === "inversion") ? '<div class="lg-row"><span class="lg-dot hollow"></span>' + t("lg_no_monto") + '</div>' : "";
+  el.innerHTML = '<div class="lg-title">' + t(colorMode === "donante" ? "lg_donante" : "lg_tipo") + '</div>' + rows + extra +
+    '<div class="lg-count">' + visiblesCount() + ' / 16 ' + t("lg_programas") + '</div>';
+}
+
 /* ===== Init ===== */
 renderFiltros();
 renderStats();
+wireToolbar();
+renderToolbarEstado();
+renderLegend();
 renderPanelBienvenida();
 </script>
 

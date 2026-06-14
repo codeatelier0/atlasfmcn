@@ -1,6 +1,6 @@
 /* ====================================================================
    atlas-data.jsx — registry + cover copy for the Atlas FMCN case study.
-   Doc bodies live in window.ATLAS_DOCS_BODIES (atlas-content.jsx).
+   Doc bodies fetched from /FMCN/*.md via window.loadDocBody (atlas-content.jsx).
    UI chrome is bilingual; original documents are Spanish-only.
    ==================================================================== */
 
@@ -8,13 +8,13 @@ const ATLAS = {
   meta: {
     title: "Atlas FMCN",
     sub: {
-      es: "Mapa Interactivo de Impacto de Financiamiento — Fondo Mexicano para la Conservación de la Naturaleza",
-      en: "Interactive Funding-Impact Map — Mexican Fund for the Conservation of Nature",
+      es: "Plataforma Interactiva de Visualización de Impacto de Financiamiento — Fondo Mexicano para la Conservación de la Naturaleza",
+      en: "Interactive Funding-Impact Platform — Mexican Fund for the Conservation of Nature",
     },
     breadcrumbRoot: "asalamanca.work",
     breadcrumbSection: { es: "proyectos", en: "work" },
     year: "2025–2026",
-    role: { es: "Product Owner / PM de TI orientado a datos", en: "Product Owner / Data-Driven IT PM" },
+    role: { es: "Product Owner / Business Analyst / Product Builder", en: "Product Owner / Data-Driven IT PM" },
     client: { es: "FMCN (proyecto de especificación)", en: "FMCN (specification project)" },
     deliverable: { es: "Especificación funcional + prototipo", en: "Functional spec + prototype" },
   },
@@ -22,8 +22,8 @@ const ATLAS = {
   cover: {
     kicker: { es: "/ case study", en: "/ case study" },
     blurb: {
-      es: "Diseñé de punta a punta la especificación de un atlas interactivo que comunica el impacto territorial del portafolio de conservación del FMCN: historias de usuario, modelo de datos, criterios de aceptación, stack, roadmap — y un prototipo funcional co-creado con IA.",
-      en: "I designed end-to-end the specification for an interactive atlas communicating the territorial impact of FMCN's conservation portfolio: user stories, data model, acceptance criteria, stack, roadmap — and a working prototype co-created with AI.",
+      es: "Diseñé de punta a punta la especificación de una plataforma interactiva que comunica el impacto territorial del portafolio de conservación del FMCN y un website público con versiones restringidas de la información: historias de usuario, modelo de datos, criterios de aceptación, stack y un prototipo funcional co-creado con IA.",
+      en: "I designed end-to-end the specification for an interactive atlas communicating the territorial impact of FMCN's conservation portfolio: user stories, data model, acceptance criteria, stack, and a working prototype co-created with AI.",
     },
     cta1: { es: "Explorar la documentación", en: "Explore the docs" },
     cta2: { es: "// ver demo interactiva", en: "// view live demo" },
@@ -35,16 +35,16 @@ const ATLAS = {
         no: "01",
         title: { es: "El problema", en: "The problem" },
         body: {
-          es: "El FMCN financia 26 proyectos de conservación en todo México, pero su impacto territorial — hectáreas, personas, organizaciones, especies — vivía disperso en reportes. Hacía falta una sola vista navegable para donantes, aliados y público.",
-          en: "FMCN funds 26 conservation projects across Mexico, but their territorial impact — hectares, people, organizations, species — lived scattered across reports. A single navigable view was needed for donors, partners and the public.",
+          es: "El FMCN financia 26 proyectos de conservación en todo México, pero sus equipos de decision y audiencias sólo pueden ver su información de impacto territorial dispersa en reportes en PDF. Hacía falta una solución que visibilizara su impacto en una sola vista navegable para audiencias internas y externas.",
+          en: "FMCN funds 26 conservation projects across Mexico, but its decision-making teams and audiences can only consult information about its territorial impact in scattered PDF reports. A solution was needed to make that impact visible in a single navigable view for both internal and external audiences.",
         },
       },
       {
         no: "02",
         title: { es: "Mi rol", en: "My role" },
         body: {
-          es: "Como Product Owner definí la visión de producto y la traduje a artefactos accionables: historias de usuario por rol, zonas funcionales del tablero, modelo de entidades, criterios de aceptación verificables y un roadmap por fases.",
-          en: "As Product Owner I defined the product vision and translated it into actionable artifacts: per-role user stories, dashboard functional zones, an entity model, verifiable acceptance criteria and a phased roadmap.",
+          es: "Como Product Owner, Business Analyst y Product Builder, transformé una necesidad institucional en un prototipo funcional: definí la visión del producto, levanté requerimientos, estructuré historias de usuario, modelo de entidades, criterios de aceptación, además de diseñar la experiencia, priorizar funcionalidades y preparar una demo para audiencias internas.",
+          en: "As Product Owner, Business Analyst, and Product Builder, I transformed an institutional need into a functional prototype: I defined the product vision, gathered requirements, structured user stories, the entity model, acceptance criteria, while also designing the experience, prioritizing features, and preparing a demo for internal stakeholders.",
         },
       },
       {
@@ -59,18 +59,29 @@ const ATLAS = {
 
     demoTitle: { es: "Demo interactiva", en: "Live demo" },
     demoIntro: {
-      es: "Prototipo estático del mapa de impacto — Leaflet + Chart.js, datos reales del portafolio 2025 hardcodeados, ES/EN. Co-creado con IA a partir del prompt de diseño documentado en este case study.",
-      en: "Static prototype of the impact map — Leaflet + Chart.js, real 2025 portfolio data hardcoded, ES/EN. Co-created with AI from the design prompt documented in this case study.",
+      es: "Prototipo estático de la portada pública del sitio — presenta el impacto territorial del FMCN (26 proyectos activos, 53.5 millones de hectáreas, 369 organizaciones locales) y enlaza al mapa interactivo. Co-creado con IA a partir de la estrategia de prompting living documentation documentada en este case study.",
+      en: "Static prototype of the site's public cover page — presents FMCN's territorial impact (26 active projects, 53.5 million hectares, 369 local organizations) and links into the interactive map. Co-created with AI using a living documentation strategy documented in this case study.",
     },
     demoOpen: { es: "Abrir en pestaña completa", en: "Open full tab" },
-    demoBar: "atlas-fmcn · prototipo v1 — mapa de impacto",
+    demoBar: "Atlas-FMCN · Prototipo v1",
 
-    linksTitle: { es: "Entradas destacadas", en: "Featured entries" },
-    linksIntro: {
-      es: "Cuatro puertas de entrada al trabajo de especificación.",
-      en: "Four entry points into the specification work.",
+    extraTitle: { es: "Otros prototipos del sistema", en: "Other system prototypes" },
+    extraIntro: {
+      es: "Tres vistas adicionales del mismo proyecto de especificación, diseñadas con la identidad institucional del FMCN.",
+      en: "Three additional views from the same specification project, designed with FMCN's institutional identity.",
     },
-    featuredSlugs: ["historias-de-usuario", "modelo-de-datos", "criterios-de-aceptacion", "roadmap"],
+    extraLinks: [
+      { label: { es: "Mapa interactivo", en: "Interactive map" }, href: "../mapa_impacto_fmcn.html" },
+      { label: { es: "Portal privado · landing", en: "Private portal · landing" }, href: "../landing_privado_fmcn.html" },
+      { label: { es: "Portal privado · BI e indicadores", en: "Private portal · BI dashboard" }, href: "../dashboard_bi_fmcn.html" },
+    ],
+
+    linksTitle: { es: "Especificaciones", en: "Specifications" },
+    linksIntro: {
+      es: "Cuatro puertas de entrada al trabajo de especificación del proyecto.",
+      en: "Four entry points into the specification work of this project.",
+    },
+    featuredSlugs: ["resumen", "historias-de-usuario", "stack-tecnologico", "roadmap"],
 
     indexTitle: { es: "Toda la documentación", en: "All documentation" },
     indexIntro: {
@@ -141,12 +152,15 @@ const ATLAS = {
     { slug: "identidad-visual", file: "visualbrand.md", group: "content",
       title: { es: "Identidad visual", en: "Visual identity" },
       desc: { es: "Análisis de estilo visual y criterios de UX del sitio FMCN", en: "Visual-style analysis and UX criteria of the FMCN site" } },
-    { slug: "prompt-mapa", file: "Prompt mapa.md", group: "prompts", prompt: true,
-      title: { es: "Prompt · Mapa", en: "Prompt · Map" },
-      desc: { es: "Prompt de diseño/generación del mapa interactivo", en: "Design/generation prompt for the interactive map" } },
-    { slug: "prompt-ux", file: "Prompt ux.md", group: "prompts", prompt: true,
-      title: { es: "Prompt · UX", en: "Prompt · UX" },
-      desc: { es: "Prompt de diseño UX", en: "UX design prompt" } },
+    { slug: "prompt-mapa-publico", file: "Prompt_mapa_publico.md", group: "prompts", prompt: true,
+      title: { es: "Prompt · Mapa (público)", en: "Prompt · Map (public)" },
+      desc: { es: "Prompt de diseño/generación del mapa interactivo público", en: "Design/generation prompt for the public interactive map" } },
+    { slug: "prompt-mapa-privado", file: "prompt_mapa_privado.md", group: "prompts", prompt: true,
+      title: { es: "Prompt · Mapa (privado/BI)", en: "Prompt · Map (private/BI)" },
+      desc: { es: "Prompt de diseño/generación del mapa y dashboard del portal privado", en: "Design/generation prompt for the private-portal map and BI dashboard" } },
+    { slug: "prompt-ux", file: "promptlandingpriv.md", group: "prompts", prompt: true,
+      title: { es: "Prompt · UX (portal privado)", en: "Prompt · UX (private portal)" },
+      desc: { es: "Prompt de diseño UX del portal privado / landing", en: "UX design prompt for the private portal / landing" } },
     { slug: "prompt-sistema", file: "promptsistema.md", group: "prompts", prompt: true,
       title: { es: "Prompt · Sistema", en: "Prompt · System" },
       desc: { es: "Prompt de sistema del proyecto", en: "Project system prompt" } },

@@ -1,6 +1,6 @@
 /* ====================================================================
    atlas-components.jsx — Atlas FMCN case study: cover + docs subsite.
-   Reads window.ATLAS (registry/copy) and window.ATLAS_DOCS_BODIES.
+   Reads window.ATLAS (registry/copy) and window.loadDocBody (atlas-content.jsx).
    Visual DNA: asalamanca.work (Space Grotesk / JetBrains Mono, dark).
    ==================================================================== */
 const { useState, useEffect, useRef } = React;
@@ -101,9 +101,20 @@ function AtlasCover({ lang, setLang }) {
           <div className="dp-bar">
             <i></i><i></i><i></i>
             <span className="mono">{C.demoBar}</span>
-            <a className="demo-open mono" href="../mapa_impacto_fmcn.html" target="_blank" rel="noopener">{AL(C.demoOpen, lang)} ↗</a>
+            <a className="demo-open mono" href="../portada_atlas_fmcn.html" target="_blank" rel="noopener">{AL(C.demoOpen, lang)} ↗</a>
           </div>
-          <iframe className="demo-iframe" src="../mapa_impacto_fmcn.html" title="Atlas FMCN — prototipo interactivo" loading="lazy"></iframe>
+          <iframe className="demo-iframe" src="../portada_atlas_fmcn.html" title="Atlas FMCN — prototipo interactivo" loading="lazy"></iframe>
+        </div>
+        <div className="demo-extra">
+          <span className="mono demo-extra-label">{AL(C.extraTitle, lang)}</span>
+          <p className="demo-extra-intro">{AL(C.extraIntro, lang)}</p>
+          <div className="demo-extra-links">
+            {C.extraLinks.map((l) => (
+              <a key={l.href} className="demo-extra-link mono" href={l.href} target="_blank" rel="noopener">
+                {AL(l.label, lang)} ↗
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -248,12 +259,19 @@ function DocPage({ slug, lang, setLang }) {
   const A = window.ATLAS;
   const idx = A.docs.findIndex((d) => d.slug === slug);
   const doc = A.docs[idx];
-  const body = window.ATLAS_DOCS_BODIES[slug] || "*(sin contenido)*";
   const prev = idx > 0 ? A.docs[idx - 1] : null;
   const next = idx < A.docs.length - 1 ? A.docs[idx + 1] : null;
   const group = A.groups.find((g) => g.id === doc.group);
 
-  useEffect(() => { window.scrollTo({ top: 0 }); }, [slug]);
+  const [body, setBody] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    setBody(null);
+    setError(null);
+    window.loadDocBody(doc.file).then(setBody, (err) => setError(err.message));
+  }, [slug]);
 
   return (
     <div className="docs-layout" data-screen-label={"Doc: " + slug}>
@@ -270,7 +288,11 @@ function DocPage({ slug, lang, setLang }) {
           </div>
         </header>
 
-        {doc.prompt
+        {error
+          ? <p className="md-body">⚠ {error}</p>
+          : body === null
+          ? <p className="md-body">…</p>
+          : doc.prompt
           ? <PromptBody text={body} lang={lang} />
           : <MarkdownBody md={body} lang={lang} />}
 

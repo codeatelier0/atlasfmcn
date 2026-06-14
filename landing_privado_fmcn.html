@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas FMCN — Portal privado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --verde:#0F6E56; --verde-osc:#0c5a47; --azul:#185FA5; --oliva:#a7a337;
+    --texto:#111827; --texto-sec:#6B7280;
+    --fondo:#F9FAFB; --blanco:#FFFFFF; --borde:#E5E7EB;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Open Sans',sans-serif; font-size:14px; line-height:1.6;
+    color:var(--texto); background:var(--blanco);
+  }
+  h1,h2,h3,h4,button,select{ font-family:'Lato',sans-serif; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
+
+  /* ============ HEADER ============ */
+  header{
+    background:var(--blanco); border-bottom:1px solid var(--borde);
+    position:sticky; top:0; z-index:1100;
+  }
+  .header-inner{
+    display:flex; align-items:center; gap:14px; padding:12px 28px;
+    max-width:1180px; margin:0 auto; flex-wrap:nowrap; overflow-x:auto;
+  }
+  .logo-fmcn{
+    width:40px; height:40px; background:var(--verde); color:#fff; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.5px;
+  }
+  .marca h1{ font-size:18px; font-weight:600; line-height:1.2; white-space:nowrap; }
+  .marca p{ font-size:12px; color:var(--texto-sec); white-space:nowrap; }
+  .header-controls{ margin-left:auto; display:flex; align-items:center; gap:18px; flex:0 0 auto; }
+  .rol-control{ display:flex; align-items:center; gap:8px; }
+  .rol-control label{ font-family:'Lato',sans-serif; font-size:13px; font-weight:600; color:var(--texto-sec); white-space:nowrap; }
+  #selector-rol{
+    font-size:13px; font-weight:600; color:var(--texto);
+    border:1px solid var(--borde); border-radius:20px; padding:6px 12px;
+    background:var(--blanco); cursor:pointer; transition:border-color .2s ease;
+  }
+  #selector-rol:hover{ border-color:var(--verde); }
+  .lang-toggle{ display:flex; border:1px solid var(--borde); border-radius:20px; overflow:hidden; flex:0 0 auto; }
+  .lang-toggle button{
+    border:none; background:transparent; padding:5px 11px; font-size:12px; font-weight:700;
+    color:var(--texto-sec); cursor:pointer; transition:background .2s ease,color .2s ease;
+  }
+  .lang-toggle button[aria-pressed="true"]{ background:var(--azul); color:#fff; }
+  .usuario{ display:flex; align-items:center; gap:12px; }
+  .usuario .nombre{ font-size:12.5px; color:var(--texto-sec); white-space:nowrap; }
+  .btn-logout{
+    border:1px solid var(--borde); background:var(--blanco); border-radius:20px;
+    padding:6px 14px; font-size:12.5px; font-weight:700; color:var(--texto);
+    cursor:pointer; transition:border-color .2s ease, color .2s ease; white-space:nowrap;
+  }
+  .btn-logout:hover{ border-color:var(--verde); color:var(--verde); }
+
+  /* franja de aislamiento bajo el header */
+  .aviso-rol{
+    background:var(--fondo); border-bottom:1px solid var(--borde);
+  }
+  .aviso-rol p{
+    max-width:1180px; margin:0 auto; padding:7px 28px;
+    font-size:12px; color:var(--texto-sec); font-style:italic;
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    background:linear-gradient(135deg, var(--verde) 0%, var(--verde-osc) 100%);
+    color:#fff; padding:48px 0 52px;
+  }
+  .hero h2{ font-size:28px; font-weight:700; letter-spacing:-.01em; }
+  .hero .intro{ font-size:14px; opacity:.92; max-width:760px; margin-top:10px; text-wrap:pretty; }
+  .kpis{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-top:32px;
+  }
+  .kpi{
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25);
+    border-radius:8px; padding:16px 18px;
+  }
+  .kpi .num{ font-family:'Lato',sans-serif; font-size:24px; font-weight:700; line-height:1.15; display:block; }
+  .kpi .lbl{ font-size:12px; opacity:.85; margin-top:5px; display:block; line-height:1.4; }
+
+  /* ============ ACCESOS PRINCIPALES ============ */
+  section.accesos{ padding:48px 0 8px; }
+  .seccion-titulo{
+    font-family:'Lato',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--oliva);
+    margin-bottom:20px; display:flex; align-items:center; gap:10px;
+  }
+  .seccion-titulo::after{ content:""; flex:1; height:1px; background:var(--borde); }
+  .cards-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .card{
+    position:relative; background:var(--blanco); border:1px solid var(--borde);
+    border-radius:8px; padding:24px; display:flex; flex-direction:column; gap:12px;
+    transition:border-color .2s ease, opacity .2s ease;
+  }
+  .card:hover{ border-color:var(--card-acento, var(--verde)); }
+  .card .icono{
+    width:48px; height:48px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; background:var(--card-acento, var(--verde)); flex:0 0 auto;
+  }
+  .card .icono svg{ width:22px; height:22px; }
+  .card h3{ font-size:18px; font-weight:600; }
+  .card .descripcion{ font-size:13px; color:var(--texto-sec); flex:1; text-wrap:pretty; }
+  .card .alcance{
+    font-size:12px; color:var(--card-acento, var(--verde));
+    font-family:'Lato',sans-serif; font-weight:600;
+  }
+  .badges{ position:absolute; top:16px; right:16px; display:flex; align-items:center; gap:6px; }
+  .badge-privado{
+    background:var(--oliva); color:#111827; font-family:'Lato',sans-serif;
+    font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:.03em;
+  }
+  .candado{
+    display:none; width:22px; height:22px; border-radius:50%; background:var(--texto-sec);
+    align-items:center; justify-content:center; cursor:help;
+  }
+  .candado svg{ width:11px; height:11px; }
+  .btn-card{
+    align-self:flex-start; display:inline-block; border:none; cursor:pointer;
+    background:var(--card-acento, var(--verde)); color:#fff; text-decoration:none;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:13.5px;
+    padding:9px 20px; border-radius:20px; transition:opacity .2s ease, transform .2s ease;
+  }
+  .btn-card:hover{ opacity:.88; }
+  .btn-card.oscuro{ color:#111827; }
+  /* estado deshabilitado por rol */
+  .deshabilitado{ opacity:0.5; }
+  .deshabilitado:hover{ border-color:var(--borde); }
+  .deshabilitado .candado{ display:flex; }
+  .deshabilitado .btn-card, .deshabilitado .btn-tile{ pointer-events:none; cursor:not-allowed; }
+
+  /* ============ ACCESOS SECUNDARIOS ============ */
+  section.secundarios{ padding:40px 0 8px; }
+  .tiles-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  .tile{
+    position:relative; background:var(--fondo); border:1px solid var(--borde);
+    border-radius:8px; padding:16px; display:flex; flex-direction:column; gap:8px;
+    transition:border-color .2s ease, opacity .2s ease;
+  }
+  .tile:hover{ border-color:var(--azul); }
+  .tile .icono-mini{ color:var(--azul); }
+  .tile .icono-mini svg{ width:18px; height:18px; }
+  .tile h4{ font-size:14px; font-weight:600; line-height:1.3; }
+  .tile p{ font-size:12px; color:var(--texto-sec); flex:1; line-height:1.45; }
+  .tile .nota{ font-size:11px; color:var(--oliva); font-family:'Lato',sans-serif; font-weight:600; }
+  .btn-tile{
+    align-self:flex-start; border:1px solid var(--azul); background:transparent;
+    color:var(--azul); font-family:'Lato',sans-serif; font-weight:700; font-size:12px;
+    padding:5px 14px; border-radius:20px; cursor:pointer; transition:background .2s ease,color .2s ease;
+  }
+  .btn-tile:hover{ background:var(--azul); color:#fff; }
+  .tile .candado{ position:absolute; top:12px; right:12px; }
+
+  /* ============ PANEL REPOSITORIO ============ */
+  .repo-panel{
+    max-height:0; overflow:hidden; transition:max-height .3s ease;
+  }
+  .repo-panel.abierto{ max-height:1400px; }
+  .repo-inner{
+    margin:32px 0 8px; border:1px solid var(--borde); border-radius:8px;
+    background:var(--fondo); padding:28px;
+  }
+  .repo-inner h3{ font-size:17px; font-weight:600; display:flex; align-items:center; gap:10px; }
+  .repo-inner h3 .punto{ width:10px; height:10px; border-radius:50%; background:var(--oliva); }
+  .repo-grupo{ margin-top:22px; }
+  .repo-grupo h4{
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--texto-sec); margin-bottom:10px;
+  }
+  .repo-lista{ display:flex; flex-direction:column; gap:8px; }
+  .repo-fila{
+    display:flex; align-items:center; gap:16px; background:var(--blanco);
+    border:1px solid var(--borde); border-radius:8px; padding:12px 16px;
+  }
+  .repo-fila .archivo{
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:12.5px;
+    font-weight:600; flex:0 0 240px;
+  }
+  .repo-fila .det{ font-size:12.5px; color:var(--texto-sec); flex:1; }
+  .repo-fila .peso{ font-size:12px; color:var(--texto-sec); flex:0 0 auto; }
+  .btn-descargar{
+    border:none; background:var(--verde); color:#fff; font-family:'Lato',sans-serif;
+    font-weight:700; font-size:12px; padding:6px 16px; border-radius:20px;
+    cursor:pointer; transition:background .2s ease; flex:0 0 auto;
+  }
+  .btn-descargar:hover{ background:var(--verde-osc); }
+  .repo-bloqueado{ display:none; text-align:center; padding:18px 0 6px; }
+  .repo-bloqueado p{ font-size:13.5px; color:var(--texto-sec); max-width:520px; margin:0 auto; }
+  .repo-bloqueado .btn-card{ margin-top:16px; align-self:center; }
+  .repo-panel.solo-mensaje .repo-contenido{ display:none; }
+  .repo-panel.solo-mensaje .repo-bloqueado{ display:block; }
+
+  /* ============ FOOTER ============ */
+  footer{
+    background:#111827; color:#F9FAFB; margin-top:56px; padding:24px 0; font-size:12px;
+  }
+  footer .wrap{ display:flex; flex-direction:column; gap:8px; }
+  footer .sec{ color:#9CA3AF; }
+  footer a{ color:#a7a337; text-decoration:none; font-weight:600; }
+  footer a:hover{ text-decoration:underline; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:768px){
+    .kpis{ grid-template-columns:repeat(2,1fr); }
+    .cards-grid{ grid-template-columns:1fr; }
+    .tiles-grid{ grid-template-columns:repeat(2,1fr); }
+    .repo-fila{ flex-wrap:wrap; }
+    .repo-fila .archivo{ flex:1 1 100%; }
+    .aviso-rol p{ padding:7px 20px; }
+    .wrap{ padding:0 20px; }
+    .header-inner{ padding:12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header data-screen-label="Header portal privado">
+  <div class="header-inner">
+    <div class="logo-fmcn" aria-hidden="true">FMCN</div>
+    <div class="marca">
+      <h1>Atlas FMCN</h1>
+      <p data-i18n="subtitulo">Portal privado</p>
+    </div>
+    <div class="header-controls">
+      <div class="rol-control">
+        <label for="selector-rol" data-i18n="ver_como">Ver como:</label>
+        <select id="selector-rol" aria-label="Seleccionar rol de usuario para simular la vista">
+          <option value="admin" data-i18n-opt="rol_admin">Administrador FMCN</option>
+          <option value="tecnico" data-i18n-opt="rol_tecnico">Equipo técnico de proyecto</option>
+        </select>
+      </div>
+      <div class="lang-toggle" role="group" aria-label="Selector de idioma">
+        <button type="button" id="lang-es" aria-pressed="true" aria-label="Español">ES</button>
+        <button type="button" id="lang-en" aria-pressed="false" aria-label="English">EN</button>
+      </div>
+      <div class="usuario">
+        <span class="nombre" id="usuario-nombre">Ana Torres · Administradora FMCN</span>
+        <button type="button" class="btn-logout" id="btn-logout" data-i18n="cerrar_sesion" aria-label="Cerrar sesión">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="aviso-rol">
+  <p id="frase-aislamiento" data-i18n="aislamiento">"Los administradores acceden a todos los datos, incluyendo capas GIS, datos fuente y reportes en borrador. Funcionalidades de descarga de datos y generación de reportes no están disponibles en versiones públicas."</p>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" data-screen-label="Hero bienvenida">
+  <div class="wrap">
+    <h2 id="saludo">Hola, Ana</h2>
+    <p class="intro" data-i18n="intro">Atlas FMCN centraliza la inteligencia territorial de los 26 programas de conservación del FMCN: mapa interactivo, indicadores de desempeño y repositorio de datos para equipos internos.</p>
+    <div class="kpis" role="list" aria-label="KPIs globales de cartera 2025">
+      <div class="kpi" role="listitem"><span class="num">53.5M&nbsp;ha</span><span class="lbl" data-i18n="kpi1">protegidas</span></div>
+      <div class="kpi" role="listitem"><span class="num">1.2M&nbsp;ha</span><span class="lbl" data-i18n="kpi2">manejo sostenible</span></div>
+      <div class="kpi" role="listitem"><span class="num">125,661</span><span class="lbl" data-i18n="kpi3">personas con prácticas sostenibles</span></div>
+      <div class="kpi" role="listitem"><span class="num">425</span><span class="lbl" data-i18n="kpi4">especies prioritarias</span></div>
+      <div class="kpi" role="listitem"><span class="num">369</span><span class="lbl" data-i18n="kpi5">organizaciones locales</span></div>
+      <div class="kpi" role="listitem"><span class="num">26</span><span class="lbl" data-i18n="kpi6">programas activos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACCESOS PRINCIPALES ============ -->
+<section class="accesos wrap" data-screen-label="Accesos principales">
+  <h2 class="seccion-titulo" data-i18n="accesos_principales">Accesos principales</h2>
+  <div class="cards-grid">
+
+    <article class="card" id="card-mapa" data-nav="mapa" style="--card-acento:#0F6E56;">
+      <div class="badges">
+        <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+        <span class="badge-privado" data-i18n="privado">Privado</span>
+      </div>
+      <div class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6.5-5.4-6.5-10A6.5 6.5 0 0 1 12 4.5 6.5 6.5 0 0 1 18.5 11c0 4.6-6.5 10-6.5 10Z" fill="#fff"></path><circle cx="12" cy="10.8" r="2.4" fill="#0F6E56"></circle></svg></div>
+      <h3 data-i18n="mapa_titulo">Mapa interactivo avanzado</h3>
+      <p class="descripcion" data-i18n="mapa_desc">Explora las capas territoriales, financieras y de biodiversidad de los 26 programas FMCN. Incluye capas privadas (cobertura de financiamiento, KPIs de eficiencia) y exportación a PNG/PDF.</p>
+      <p class="alcance" id="alcance-mapa">Acceso completo, todas las capas</p>
+      <a class="btn-card" id="btn-mapa" href="mapa_impacto_privado/mapa_impacto_fmcn_privado.html" aria-label="Abrir mapa interactivo avanzado" data-i18n="mapa_btn">Abrir mapa →</a>
+    </article>
+
+    <article class="card" id="card-bi" data-nav="bi" style="--card-acento:#185FA5;">
+      <div class="badges">
+        <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+        <span class="badge-privado" data-i18n="privado">Privado</span>
+      </div>
+      <div class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="12" width="3.5" height="8" rx="1" fill="#fff"></rect><rect x="10.2" y="7" width="3.5" height="13" rx="1" fill="#fff"></rect><rect x="16.5" y="4" width="3.5" height="16" rx="1" fill="#fff"></rect></svg></div>
+      <h3 data-i18n="bi_titulo">BI &amp; Indicadores (Dashboards)</h3>
+      <p class="descripcion" data-i18n="bi_desc">Tablero de inteligencia de negocios con KPIs de cartera, indicadores de conservación (SPI, RLI, DCI, Carbono, Deforestación, Shannon) e indicadores de eficiencia fiduciaria (SROI, HHI, PER) por programa.</p>
+      <p class="alcance" id="alcance-bi">Todos los programas (26)</p>
+      <a class="btn-card" id="btn-bi" href="dashboard_bi_fmcn.html" aria-label="Abrir dashboard de BI e indicadores" data-i18n="bi_btn">Abrir dashboard →</a>
+    </article>
+
+    <article class="card" id="card-repo" data-nav="repo" style="--card-acento:#a7a337;">
+      <div class="badges">
+        <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+        <span class="badge-privado" data-i18n="privado">Privado</span>
+      </div>
+      <div class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0 4-4m-4 4-4-4" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 18.5h14" stroke="#111827" stroke-width="2" stroke-linecap="round"></path></svg></div>
+      <h3 data-i18n="repo_titulo">Repositorio de datos</h3>
+      <p class="descripcion" data-i18n="repo_desc">Descarga shapefiles, capas GIS (.geojson, .kml) y datos de monitoreo de campo de los 26 programas FMCN para análisis externo.</p>
+      <p class="alcance" id="alcance-repo">Acceso completo, incl. reportes en borrador</p>
+      <button type="button" class="btn-card oscuro" id="btn-repo" aria-label="Ver archivos disponibles del repositorio de datos" aria-expanded="false" aria-controls="repo-panel" data-i18n="repo_btn">Ver archivos disponibles</button>
+    </article>
+
+  </div>
+
+  <!-- ============ PANEL REPOSITORIO (expandible) ============ -->
+  <div class="repo-panel" id="repo-panel" data-screen-label="Panel repositorio de datos">
+    <div class="repo-inner">
+      <div class="repo-contenido">
+        <h3><span class="punto"></span><span data-i18n="repo_panel_titulo">Repositorio de datos — archivos disponibles</span></h3>
+        <div class="repo-grupo">
+          <h4 data-i18n="repo_g1">Shapefiles y capas GIS</h4>
+          <div class="repo-lista">
+            <div class="repo-fila">
+              <span class="archivo">anp-federales.geojson</span>
+              <span class="det" data-i18n="f1">Polígonos ANP federales (SIG CONANP)</span>
+              <span class="peso">8.7 MB</span>
+              <button type="button" class="btn-descargar" data-archivo="anp-federales.geojson" aria-label="Descargar anp-federales.geojson" data-i18n="descargar">Descargar</button>
+            </div>
+            <div class="repo-fila">
+              <span class="archivo">red-hidrografica.geojson</span>
+              <span class="det" data-i18n="f2">Red Hidrográfica Digital (INEGI)</span>
+              <span class="peso">12.3 MB</span>
+              <button type="button" class="btn-descargar" data-archivo="red-hidrografica.geojson" aria-label="Descargar red-hidrografica.geojson" data-i18n="descargar">Descargar</button>
+            </div>
+            <div class="repo-fila">
+              <span class="archivo">uso-suelo.geojson</span>
+              <span class="det" data-i18n="f3">Uso de suelo y vegetación Serie VI (INEGI)</span>
+              <span class="peso">21.5 MB</span>
+              <button type="button" class="btn-descargar" data-archivo="uso-suelo.geojson" aria-label="Descargar uso-suelo.geojson" data-i18n="descargar">Descargar</button>
+            </div>
+            <div class="repo-fila">
+              <span class="archivo">estados-mx.geojson</span>
+              <span class="det" data-i18n="f4">Cobertura de financiamiento por entidad (privado)</span>
+              <span class="peso">2.4 MB</span>
+              <button type="button" class="btn-descargar" data-archivo="estados-mx.geojson" aria-label="Descargar estados-mx.geojson" data-i18n="descargar">Descargar</button>
+            </div>
+          </div>
+        </div>
+        <div class="repo-grupo">
+          <h4 data-i18n="repo_g2">Datos de monitoreo y cartera</h4>
+          <div class="repo-lista">
+            <div class="repo-fila">
+              <span class="archivo">programas.json</span>
+              <span class="det" data-i18n="f5">Cartera de 26 programas FMCN 2025</span>
+              <span class="peso">340 KB</span>
+              <button type="button" class="btn-descargar" data-archivo="programas.json" aria-label="Descargar programas.json" data-i18n="descargar">Descargar</button>
+            </div>
+            <div class="repo-fila">
+              <span class="archivo">kpi_observaciones.json</span>
+              <span class="det" data-i18n="f6">Observaciones de KPIs de conservación</span>
+              <span class="peso">1.1 MB</span>
+              <button type="button" class="btn-descargar" data-archivo="kpi_observaciones.json" aria-label="Descargar kpi_observaciones.json" data-i18n="descargar">Descargar</button>
+            </div>
+            <div class="repo-fila">
+              <span class="archivo">cartera-fmcn-2025.csv</span>
+              <span class="det" data-i18n="f7">Exportación tabular de la cartera (para uso en Excel/BI externo)</span>
+              <span class="peso">96 KB</span>
+              <button type="button" class="btn-descargar" data-archivo="cartera-fmcn-2025.csv" aria-label="Descargar cartera-fmcn-2025.csv" data-i18n="descargar">Descargar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="repo-bloqueado">
+        <p data-i18n="repo_no_rol">El repositorio de datos no está disponible para tu rol. Usa "Generar reporte" para obtener información de tus proyectos.</p>
+        <button type="button" class="btn-card" id="btn-ir-reporte" style="--card-acento:#0F6E56;" data-i18n="ir_reporte" aria-label="Ir a Generar reporte">Ir a Generar reporte</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACCESOS SECUNDARIOS ============ -->
+<section class="secundarios wrap" data-screen-label="Accesos secundarios">
+  <h2 class="seccion-titulo" data-i18n="accesos_secundarios">Accesos secundarios</h2>
+  <div class="tiles-grid">
+
+    <article class="tile" id="tile-proyectos" data-nav="proyectos">
+      <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+      <span class="icono-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"></rect><path d="M3 9h18" stroke="currentColor" stroke-width="1.8"></path></svg></span>
+      <h4 data-i18n="t1_titulo">Mis proyectos</h4>
+      <p data-i18n="t1_desc">Fichas de proyecto: avance financiero, indicadores y próximos hitos.</p>
+      <button type="button" class="btn-tile" data-accion="mis proyectos" aria-label="Abrir Mis proyectos" data-i18n="abrir">Abrir</button>
+    </article>
+
+    <article class="tile" id="tile-alertas" data-nav="alertas">
+      <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+      <span class="icono-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4a5.5 5.5 0 0 0-5.5 5.5c0 4-1.7 5.5-1.7 5.5h14.4s-1.7-1.5-1.7-5.5A5.5 5.5 0 0 0 12 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M10 18.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+      <h4 data-i18n="t2_titulo">Alertas territoriales</h4>
+      <p data-i18n="t2_desc">Alertas de deforestación y presión territorial por programa.</p>
+      <span class="nota" id="nota-alertas"></span>
+      <button type="button" class="btn-tile" data-accion="alertas territoriales" aria-label="Abrir Alertas territoriales" data-i18n="abrir">Abrir</button>
+    </article>
+
+    <article class="tile" id="tile-matriz" data-nav="matriz">
+      <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+      <span class="icono-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1" stroke="currentColor" stroke-width="1.8"></rect><rect x="13" y="3.5" width="7.5" height="7.5" rx="1" stroke="currentColor" stroke-width="1.8"></rect><rect x="3.5" y="13" width="7.5" height="7.5" rx="1" stroke="currentColor" stroke-width="1.8"></rect><rect x="13" y="13" width="7.5" height="7.5" rx="1" stroke="currentColor" stroke-width="1.8"></rect></svg></span>
+      <h4 data-i18n="t3_titulo">Matriz de priorización</h4>
+      <p data-i18n="t3_desc">Herramienta de apoyo a decisiones estratégicas de cartera.</p>
+      <span class="nota" id="nota-matriz"></span>
+      <button type="button" class="btn-tile" data-accion="matriz de priorización" aria-label="Abrir Matriz de priorización" data-i18n="abrir">Abrir</button>
+    </article>
+
+    <article class="tile" id="tile-reporte" data-nav="reporte">
+      <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+      <span class="icono-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h8.5L19 8v12.5H6V3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M9 12h7M9 15.5h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+      <h4 data-i18n="t4_titulo">Generar reporte</h4>
+      <p data-i18n="t4_desc">Selección de plantilla y descarga en PDF.</p>
+      <span class="nota" id="nota-reporte"></span>
+      <button type="button" class="btn-tile" data-accion="generar reporte" aria-label="Abrir Generar reporte" data-i18n="abrir">Abrir</button>
+    </article>
+
+    <article class="tile" id="tile-admin" data-nav="admin">
+      <span class="candado" data-i18n-title="no_disponible" title="No disponible para tu rol" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#fff"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#fff" stroke-width="1.6"></path></svg></span>
+      <span class="icono-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 3v2.5M12 18.5V21M21 12h-2.5M5.5 12H3M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8M18.4 18.4l-1.8-1.8M7.4 7.4 5.6 5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+      <h4 data-i18n="t5_titulo">Administración</h4>
+      <p data-i18n="t5_desc">Gestión de usuarios y roles, configuración de capas y log de auditoría.</p>
+      <button type="button" class="btn-tile" data-accion="administración" aria-label="Abrir Administración" data-i18n="abrir">Abrir</button>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer data-screen-label="Footer">
+  <div class="wrap">
+    <p data-i18n="footer1">Plataforma de Inteligencia Territorial Atlas FMCN — Versión privada. Acceso registrado y auditado. Cifrado en tránsito (TLS 1.2+).</p>
+    <p class="sec"><span data-i18n="footer2">v0.1 — prototipo estático · generado el</span> <span id="fecha-build"></span></p>
+    <p><a href="https://fmcn.org/" target="_blank" rel="noopener" data-i18n="footer3">Volver al sitio público de fmcn.org ↗</a></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============ Datos hardcoded (promptsistema.md §2.2, §7.2) ============ */
+  var ROLES = {
+    admin: {
+      usuario: { es: 'Ana Torres · Administradora FMCN', en: 'Ana Torres · FMCN Administrator' },
+      saludo: { es: 'Hola, Ana', en: 'Hello, Ana' },
+      acceso: { mapa:true, bi:true, repo:true, proyectos:true, alertas:true, matriz:true, reporte:true, admin:true },
+      alcances: {
+        mapa: { es:'Acceso completo, todas las capas', en:'Full access, all layers' },
+        bi:   { es:'Todos los programas (26)', en:'All programs (26)' },
+        repo: { es:'Acceso completo, incl. reportes en borrador', en:'Full access, incl. draft reports' }
+      },
+      notas: {
+        alertas: { es:'Todas', en:'All' },
+        matriz:  { es:'', en:'' },
+        reporte: { es:'Todas las plantillas', en:'All templates' }
+      }
+    },
+    tecnico: {
+      usuario: { es: 'Equipo CONECTA · Equipo técnico de proyecto', en: 'CONECTA Team · Project technical team' },
+      saludo: { es: 'Hola, Equipo CONECTA', en: 'Hello, CONECTA Team' },
+      acceso: { mapa:true, bi:true, repo:true, proyectos:true, alertas:true, matriz:true, reporte:true, admin:false },
+      alcances: {
+        mapa: { es:'Capas de proyectos asignados', en:'Layers of assigned projects' },
+        bi:   { es:'Programas asignados al equipo', en:'Programs assigned to the team' },
+        repo: { es:'Datos fuente de proyectos asignados', en:'Source data of assigned projects' }
+      },
+      notas: {
+        alertas: { es:'De proyectos asignados', en:'Assigned projects only' },
+        matriz:  { es:'Solo lectura', en:'Read-only' },
+        reporte: { es:'Plantilla de proyecto asignado', en:'Assigned project template' }
+      }
+    }
+  };
+
+  /* ============ Textos i18n (visualbrand.md § Idiomas) ============ */
+  var I18N = {
+    subtitulo:            { es:'Portal privado', en:'Private portal' },
+    ver_como:             { es:'Ver como:', en:'View as:' },
+    rol_admin:            { es:'Administrador FMCN', en:'FMCN Administrator' },
+    rol_tecnico:          { es:'Equipo técnico de proyecto', en:'Project technical team' },
+    cerrar_sesion:        { es:'Cerrar sesión', en:'Log out' },
+    aislamiento:          { es:'"Los administradores acceden a todos los datos, incluyendo capas GIS, datos fuente y reportes en borrador. Funcionalidades de descarga de datos y generación de reportes no están disponibles en versiones públicas."', en:'"Administrators access all data, including GIS layers, source data and draft reports. Data download and report generation features are not available in public versions."' },
+    intro:                { es:'Atlas FMCN centraliza la inteligencia territorial de los 26 programas de conservación del FMCN: mapa interactivo, indicadores de desempeño y repositorio de datos para equipos internos.', en:'Atlas FMCN centralizes the territorial intelligence of FMCN\u2019s 26 conservation programs: interactive map, performance indicators and a data repository for internal teams.' },
+    kpi1:                 { es:'protegidas', en:'protected' },
+    kpi2:                 { es:'manejo sostenible', en:'sustainable management' },
+    kpi3:                 { es:'personas con prácticas sostenibles', en:'people with sustainable practices' },
+    kpi4:                 { es:'especies prioritarias', en:'priority species' },
+    kpi5:                 { es:'organizaciones locales', en:'local organizations' },
+    kpi6:                 { es:'programas activos', en:'active programs' },
+    accesos_principales:  { es:'Accesos principales', en:'Main access' },
+    accesos_secundarios:  { es:'Accesos secundarios', en:'Secondary access' },
+    privado:              { es:'Privado', en:'Private' },
+    no_disponible:        { es:'No disponible para tu rol', en:'Not available for your role' },
+    mapa_titulo:          { es:'Mapa interactivo avanzado', en:'Advanced interactive map' },
+    mapa_desc:            { es:'Explora las capas territoriales, financieras y de biodiversidad de los 26 programas FMCN. Incluye capas privadas (cobertura de financiamiento, KPIs de eficiencia) y exportación a PNG/PDF.', en:'Explore the territorial, financial and biodiversity layers of the 26 FMCN programs. Includes private layers (funding coverage, efficiency KPIs) and PNG/PDF export.' },
+    mapa_btn:             { es:'Abrir mapa →', en:'Open map →' },
+    bi_titulo:            { es:'BI & Indicadores (Dashboards)', en:'BI & Indicators (Dashboards)' },
+    bi_desc:              { es:'Tablero de inteligencia de negocios con KPIs de cartera, indicadores de conservación (SPI, RLI, DCI, Carbono, Deforestación, Shannon) e indicadores de eficiencia fiduciaria (SROI, HHI, PER) por programa.', en:'Business-intelligence dashboard with portfolio KPIs, conservation indicators (SPI, RLI, DCI, Carbon, Deforestation, Shannon) and fiduciary-efficiency indicators (SROI, HHI, PER) per program.' },
+    bi_btn:               { es:'Abrir dashboard →', en:'Open dashboard →' },
+    repo_titulo:          { es:'Repositorio de datos', en:'Data repository' },
+    repo_desc:            { es:'Descarga shapefiles, capas GIS (.geojson, .kml) y datos de monitoreo de campo de los 26 programas FMCN para análisis externo.', en:'Download shapefiles, GIS layers (.geojson, .kml) and field-monitoring data from the 26 FMCN programs for external analysis.' },
+    repo_btn:             { es:'Ver archivos disponibles', en:'View available files' },
+    repo_panel_titulo:    { es:'Repositorio de datos — archivos disponibles', en:'Data repository — available files' },
+    repo_g1:              { es:'Shapefiles y capas GIS', en:'Shapefiles and GIS layers' },
+    repo_g2:              { es:'Datos de monitoreo y cartera', en:'Monitoring and portfolio data' },
+    f1: { es:'Polígonos ANP federales (SIG CONANP)', en:'Federal protected-area polygons (SIG CONANP)' },
+    f2: { es:'Red Hidrográfica Digital (INEGI)', en:'Digital Hydrographic Network (INEGI)' },
+    f3: { es:'Uso de suelo y vegetación Serie VI (INEGI)', en:'Land use and vegetation Series VI (INEGI)' },
+    f4: { es:'Cobertura de financiamiento por entidad (privado)', en:'Funding coverage by state (private)' },
+    f5: { es:'Cartera de 26 programas FMCN 2025', en:'Portfolio of 26 FMCN programs 2025' },
+    f6: { es:'Observaciones de KPIs de conservación', en:'Conservation KPI observations' },
+    f7: { es:'Exportación tabular de la cartera (para uso en Excel/BI externo)', en:'Tabular portfolio export (for Excel / external BI)' },
+    descargar:            { es:'Descargar', en:'Download' },
+    repo_no_rol:          { es:'El repositorio de datos no está disponible para tu rol. Usa "Generar reporte" para obtener información de tus proyectos.', en:'The data repository is not available for your role. Use "Generate report" to obtain information about your projects.' },
+    ir_reporte:           { es:'Ir a Generar reporte', en:'Go to Generate report' },
+    t1_titulo:            { es:'Mis proyectos', en:'My projects' },
+    t1_desc:              { es:'Fichas de proyecto: avance financiero, indicadores y próximos hitos.', en:'Project files: financial progress, indicators and upcoming milestones.' },
+    t2_titulo:            { es:'Alertas territoriales', en:'Territorial alerts' },
+    t2_desc:              { es:'Alertas de deforestación y presión territorial por programa.', en:'Deforestation and territorial-pressure alerts per program.' },
+    t3_titulo:            { es:'Matriz de priorización', en:'Prioritization matrix' },
+    t3_desc:              { es:'Herramienta de apoyo a decisiones estratégicas de cartera.', en:'Strategic portfolio decision-support tool.' },
+    t4_titulo:            { es:'Generar reporte', en:'Generate report' },
+    t4_desc:              { es:'Selección de plantilla y descarga en PDF.', en:'Template selection and PDF download.' },
+    t5_titulo:            { es:'Administración', en:'Administration' },
+    t5_desc:              { es:'Gestión de usuarios y roles, configuración de capas y log de auditoría.', en:'User and role management, layer configuration and audit log.' },
+    abrir:                { es:'Abrir', en:'Open' },
+    footer1:              { es:'Plataforma de Inteligencia Territorial Atlas FMCN — Versión privada. Acceso registrado y auditado. Cifrado en tránsito (TLS 1.2+).', en:'Atlas FMCN Territorial Intelligence Platform — Private version. Access is logged and audited. Encryption in transit (TLS 1.2+).' },
+    footer2:              { es:'v0.1 — prototipo estático · generado el', en:'v0.1 — static prototype · generated on' },
+    footer3:              { es:'Volver al sitio público de fmcn.org ↗', en:'Back to the public site at fmcn.org ↗' }
+  };
+
+  var idioma = 'es';
+  var rolActivo = 'admin';
+
+  var $ = function(sel){ return document.querySelector(sel); };
+  var $$ = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+
+  /* ============ Aplicar idioma ============ */
+  function aplicarIdioma(){
+    document.documentElement.lang = idioma;
+    $$('[data-i18n]').forEach(function(el){
+      var clave = el.getAttribute('data-i18n');
+      if (I18N[clave]) el.textContent = I18N[clave][idioma];
+    });
+    $$('[data-i18n-opt]').forEach(function(el){
+      var clave = el.getAttribute('data-i18n-opt');
+      if (I18N[clave]) el.textContent = I18N[clave][idioma];
+    });
+    $$('[data-i18n-title]').forEach(function(el){
+      var clave = el.getAttribute('data-i18n-title');
+      if (I18N[clave]) el.setAttribute('title', I18N[clave][idioma]);
+    });
+    $('#lang-es').setAttribute('aria-pressed', idioma === 'es' ? 'true' : 'false');
+    $('#lang-en').setAttribute('aria-pressed', idioma === 'en' ? 'true' : 'false');
+    aplicarRol(); /* refresca textos dinámicos del rol */
+  }
+
+  /* ============ Aplicar rol (tabla de visibilidad §2.2) ============ */
+  function aplicarRol(){
+    var rol = ROLES[rolActivo];
+
+    $('#usuario-nombre').textContent = rol.usuario[idioma];
+    $('#saludo').textContent = rol.saludo[idioma];
+
+    /* alcances por tarjeta principal */
+    $('#alcance-mapa').textContent = rol.alcances.mapa[idioma];
+    $('#alcance-bi').textContent   = rol.alcances.bi[idioma];
+    $('#alcance-repo').textContent = rol.alcances.repo[idioma];
+
+    /* notas en tiles secundarios */
+    $('#nota-alertas').textContent = rol.notas.alertas[idioma];
+    $('#nota-matriz').textContent  = rol.notas.matriz[idioma];
+    $('#nota-reporte').textContent = rol.notas.reporte[idioma];
+
+    /* habilitar / deshabilitar tarjetas y tiles según la tabla */
+    $$('[data-nav]').forEach(function(el){
+      var clave = el.getAttribute('data-nav');
+      var disponible = !!rol.acceso[clave];
+      el.classList.toggle('deshabilitado', !disponible);
+      var accionable = el.querySelector('.btn-card, .btn-tile');
+      if (accionable){
+        if (disponible){
+          accionable.removeAttribute('aria-disabled');
+          accionable.removeAttribute('tabindex');
+          if (accionable.tagName === 'BUTTON') accionable.disabled = false;
+        } else {
+          accionable.setAttribute('aria-disabled','true');
+          accionable.setAttribute('tabindex','-1');
+          if (accionable.tagName === 'BUTTON') accionable.disabled = true;
+        }
+      }
+    });
+
+    /* panel repositorio: rol sin acceso ve mensaje de no disponibilidad */
+    var panel = $('#repo-panel');
+    panel.classList.toggle('solo-mensaje', !rol.acceso.repo);
+    /* si el panel está abierto y cambia el rol, mantenerlo abierto para documentar la diferencia */
+  }
+
+  /* ============ Panel repositorio expandible ============ */
+  function togglePanel(forzarAbrir){
+    var panel = $('#repo-panel');
+    var btn = $('#btn-repo');
+    var abrir = (typeof forzarAbrir === 'boolean') ? forzarAbrir : !panel.classList.contains('abierto');
+    panel.classList.toggle('abierto', abrir);
+    btn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  }
+
+  /* ============ Eventos ============ */
+  $('#selector-rol').addEventListener('change', function(e){
+    rolActivo = e.target.value;
+    aplicarRol();
+  });
+
+  $('#lang-es').addEventListener('click', function(){ idioma = 'es'; aplicarIdioma(); });
+  $('#lang-en').addEventListener('click', function(){ idioma = 'en'; aplicarIdioma(); });
+
+  $('#btn-logout').addEventListener('click', function(){ console.log('logout'); });
+
+  $('#btn-repo').addEventListener('click', function(){
+    if (this.getAttribute('aria-disabled') === 'true') return;
+    togglePanel();
+  });
+
+  $('#btn-ir-reporte').addEventListener('click', function(){
+    togglePanel(false);
+    var tile = $('#tile-reporte');
+    var y = tile.getBoundingClientRect().top + window.pageYOffset - 90;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  });
+
+  $$('.btn-descargar').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      console.log('descargar: ' + btn.getAttribute('data-archivo'));
+    });
+  });
+
+  $$('.btn-tile').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (btn.disabled) return;
+      console.log('abrir: ' + btn.getAttribute('data-accion'));
+    });
+  });
+
+  /* ============ Fecha de build (footer) ============ */
+  $('#fecha-build').textContent = new Date().toLocaleDateString(
+    idioma === 'es' ? 'es-MX' : 'en-US',
+    { year:'numeric', month:'long', day:'numeric' }
+  );
+
+  /* ============ Estado inicial ============ */
+  aplicarIdioma();
+})();
+</script>
+</body>
+</html>

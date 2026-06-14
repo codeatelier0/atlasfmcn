@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas FMCN — La conservación de México, en un solo mapa</title>
+<meta name="description" content="Atlas FMCN: el impacto territorial del Fondo Mexicano para la Conservación de la Naturaleza. 26 proyectos activos, 53.5 millones de hectáreas financiadas, 369 organizaciones locales.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root{
+    --verde:#0F6E56; --verde-osc:#0c5a47; --azul:#185FA5; --oliva:#a7a337;
+    --texto:#111827; --texto-sec:#6B7280;
+    --fondo:#F9FAFB; --blanco:#FFFFFF; --borde:#E5E7EB;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Open Sans',sans-serif; font-size:16px; line-height:1.65;
+    color:var(--texto); background:var(--blanco);
+  }
+  h1,h2,h3,button{ font-family:'Lato',sans-serif; }
+  a{ color:inherit; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
+
+  /* ============ HEADER ============ */
+  header{
+    background:var(--blanco); border-bottom:1px solid var(--borde);
+    position:sticky; top:0; z-index:1100;
+  }
+  .header-inner{
+    display:flex; align-items:center; gap:14px; padding:14px 28px;
+    max-width:1180px; margin:0 auto;
+  }
+  .logo-fmcn{
+    width:40px; height:40px; background:var(--verde); color:#fff; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.5px;
+  }
+  .marca h1{ font-size:16px; font-weight:700; line-height:1.2; }
+  .marca p{ font-size:11.5px; color:var(--texto-sec); }
+  nav.principal{ margin-left:auto; display:flex; align-items:center; gap:26px; }
+  nav.principal a{
+    font-family:'Lato',sans-serif; font-size:14px; font-weight:600;
+    color:var(--texto-sec); text-decoration:none; transition:color .2s ease;
+  }
+  nav.principal a:hover{ color:var(--verde); }
+  nav.principal a.activo{ color:var(--verde); }
+  .lang-toggle{
+    display:flex; border:1px solid var(--borde); border-radius:20px; overflow:hidden; flex:0 0 auto;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; padding:4px 10px; font-size:12px; font-weight:700;
+    color:var(--texto-sec); cursor:pointer; transition:background .2s ease,color .2s ease;
+  }
+  .lang-toggle button[aria-pressed="true"]{ background:var(--azul); color:#fff; }
+
+  /* ============ HERO ============ */
+  .hero{ background:var(--fondo); border-bottom:1px solid var(--borde); }
+  .hero-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;
+    padding:72px 0 76px;
+  }
+  .kicker{
+    font-family:'Lato',sans-serif; font-size:12.5px; font-weight:700;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--verde);
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .kicker::before{ content:""; width:26px; height:2px; background:var(--verde); }
+  .hero h2{
+    font-size:clamp(34px,4vw,50px); font-weight:700; line-height:1.12;
+    letter-spacing:-.015em; text-wrap:pretty;
+  }
+  .hero-lead{ font-size:17.5px; color:var(--texto-sec); margin-top:22px; max-width:520px; text-wrap:pretty; }
+  .hero-cta{ display:flex; align-items:center; gap:22px; margin-top:36px; flex-wrap:wrap; }
+  .btn{
+    display:inline-block; background:var(--verde); color:#fff; text-decoration:none;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:15px;
+    padding:14px 26px; border-radius:8px; transition:background .2s ease;
+  }
+  .btn:hover{ background:var(--verde-osc); }
+  .enlace{
+    color:var(--azul); font-family:'Lato',sans-serif; font-weight:600; font-size:14.5px;
+    text-decoration:none;
+  }
+  .enlace:hover{ text-decoration:underline; }
+
+  .hero-mapa{
+    position:relative; border:1px solid var(--borde); border-radius:8px; overflow:hidden;
+    background:var(--blanco);
+  }
+  #minimapa{ height:420px; }
+  .hero-mapa-overlay{
+    position:absolute; inset:0; z-index:800; display:flex; align-items:flex-end;
+    text-decoration:none; transition:background .2s ease;
+  }
+  .hero-mapa-overlay:hover{ background:rgba(15,110,86,0.05); }
+  .hero-mapa-cta{
+    margin:16px; background:var(--blanco); border:1px solid var(--borde); border-radius:8px;
+    padding:11px 18px; font-family:'Lato',sans-serif; font-weight:700; font-size:14px;
+    color:var(--verde); transition:transform .2s ease;
+  }
+  .hero-mapa-overlay:hover .hero-mapa-cta{ transform:translateY(-2px); }
+
+  /* ============ CIFRAS ============ */
+  .cifras{ background:var(--verde); color:#fff; }
+  .cifras-grid{
+    display:grid; grid-template-columns:repeat(5,1fr);
+    max-width:1180px; margin:0 auto; padding:0 28px;
+  }
+  .cifra{
+    padding:34px 22px; border-left:1px solid rgba(255,255,255,.22);
+  }
+  .cifra:first-child{ border-left:none; }
+  .cifra .num{ font-family:'Lato',sans-serif; font-size:32px; font-weight:700; line-height:1.1; display:block; }
+  .cifra .lbl{ font-size:13px; opacity:.85; margin-top:6px; display:block; }
+
+  /* ============ SECCIONES ============ */
+  section.bloque{ padding:84px 0; }
+  section.bloque.alterno{ background:var(--fondo); border-top:1px solid var(--borde); border-bottom:1px solid var(--borde); }
+  .bloque-head{ max-width:620px; margin-bottom:48px; }
+  .bloque-head h3{ font-size:clamp(26px,3vw,34px); font-weight:700; line-height:1.2; letter-spacing:-.01em; text-wrap:pretty; }
+  .bloque-head p{ font-size:16px; color:var(--texto-sec); margin-top:14px; text-wrap:pretty; }
+
+  /* tipos de intervención */
+  .tipos{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  .tipo{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:8px;
+    padding:24px 20px; transition:border-color .2s ease;
+  }
+  .tipo:hover{ border-color:var(--tipo-color); }
+  .tipo-dot{ width:14px; height:14px; border-radius:50%; background:var(--tipo-color); margin-bottom:16px; }
+  .tipo h4{ font-family:'Lato',sans-serif; font-size:15.5px; font-weight:700; line-height:1.3; }
+  .tipo .cuenta{
+    font-family:'Lato',sans-serif; font-size:12px; font-weight:700; color:var(--tipo-color);
+    text-transform:uppercase; letter-spacing:.06em; display:block; margin-top:4px;
+  }
+  .tipo p{ font-size:13px; color:var(--texto-sec); margin-top:10px; line-height:1.55; }
+
+  /* programas destacados */
+  .programas{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  .programa{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:8px;
+    padding:30px 28px; text-decoration:none; display:flex; flex-direction:column;
+    transition:border-color .2s ease;
+  }
+  .programa:hover{ border-color:var(--prog-color); }
+  .prog-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .badge-tipo{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'Lato',sans-serif; font-size:11.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--prog-color);
+  }
+  .badge-tipo i{ width:9px; height:9px; border-radius:50%; background:var(--prog-color); }
+  .prog-flecha{ color:var(--texto-sec); font-size:15px; transition:color .2s ease, transform .2s ease; }
+  .programa:hover .prog-flecha{ color:var(--prog-color); transform:translateX(3px); }
+  .programa h4{ font-size:22px; font-weight:700; letter-spacing:-.01em; }
+  .prog-cifra{
+    font-family:'Lato',sans-serif; font-size:14px; font-weight:700; color:var(--prog-color);
+    margin-top:4px;
+  }
+  .programa p{ font-size:14px; color:var(--texto-sec); margin-top:12px; flex:1; }
+  .prog-cta{
+    font-family:'Lato',sans-serif; font-size:13px; font-weight:600; color:var(--texto-sec);
+    margin-top:18px; transition:color .2s ease;
+  }
+  .programa:hover .prog-cta{ color:var(--prog-color); }
+
+  /* cierre */
+  .cierre{ text-align:center; padding:96px 0; }
+  .cierre h3{ font-size:clamp(28px,3.4vw,40px); font-weight:700; line-height:1.15; letter-spacing:-.015em; max-width:640px; margin:0 auto; text-wrap:pretty; }
+  .cierre p{ font-size:17px; color:var(--texto-sec); max-width:540px; margin:18px auto 0; text-wrap:pretty; }
+  .cierre .hero-cta{ justify-content:center; }
+
+  /* ============ FOOTER ============ */
+  footer{ background:var(--verde); color:#fff; }
+  .footer-inner{
+    max-width:1180px; margin:0 auto; padding:38px 28px;
+    display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;
+  }
+  .footer-marca{ display:flex; align-items:center; gap:13px; }
+  .footer-marca .logo-fmcn{ background:rgba(255,255,255,.14); }
+  .footer-marca span{ font-size:13px; opacity:.9; max-width:340px; line-height:1.5; }
+  .footer-links{ display:flex; gap:24px; flex-wrap:wrap; }
+  .footer-links a{
+    color:#fff; font-family:'Lato',sans-serif; font-size:13.5px; font-weight:600;
+    text-decoration:none; opacity:.85; transition:opacity .2s ease;
+  }
+  .footer-links a:hover{ opacity:1; text-decoration:underline; }
+
+  /* ============ RESPONSIVO ============ */
+  @media (max-width:900px){
+    .hero-grid{ grid-template-columns:1fr; gap:36px; padding:52px 0 56px; }
+    #minimapa{ height:320px; }
+    .cifras-grid{ grid-template-columns:repeat(2,1fr); }
+    .cifra{ border-left:none; border-top:1px solid rgba(255,255,255,.22); }
+    .cifra:nth-child(-n+2){ border-top:none; }
+    .tipos{ grid-template-columns:1fr 1fr; }
+    .tipos .tipo:last-child{ grid-column:1 / -1; }
+    .programas{ grid-template-columns:1fr; }
+    nav.principal a:not(.activo){ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header data-screen-label="Header">
+  <div class="header-inner">
+    <div class="logo-fmcn" aria-hidden="true">FMCN</div>
+    <div class="marca">
+      <h1>Atlas FMCN</h1>
+      <p data-i18n="marca_sub">Fondo Mexicano para la Conservación de la Naturaleza</p>
+    </div>
+    <nav class="principal" aria-label="Navegación principal">
+      <a href="#" class="activo" data-i18n="nav_inicio">Inicio</a>
+      <a href="mapa_impacto_fmcn.html" data-i18n="nav_mapa">Mapa de impacto</a>
+      <a href="#programas" data-i18n="nav_programas">Programas</a>
+      <a href="https://fmcn.org" target="_blank" rel="noopener">fmcn.org ↗</a>
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button id="lang-es" aria-pressed="true" onclick="setLang('es')">ES</button>
+        <button id="lang-en" aria-pressed="false" onclick="setLang('en')">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" data-screen-label="Hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker" data-i18n="hero_kicker">Impacto territorial 2025</span>
+      <h2 data-i18n="hero_titulo">La conservación de México, en un solo mapa</h2>
+      <p class="hero-lead" data-i18n="hero_lead">El FMCN moviliza financiamiento de largo plazo para proteger los ecosistemas del país: 26 proyectos activos, 53.5 millones de hectáreas financiadas y 369 organizaciones locales trabajando en el territorio.</p>
+      <div class="hero-cta">
+        <a class="btn" href="mapa_impacto_fmcn.html" data-i18n="hero_cta1">Explorar el mapa interactivo →</a>
+        <a class="enlace" href="https://fmcn.org" target="_blank" rel="noopener" data-i18n="hero_cta2">Conoce al FMCN ↗</a>
+      </div>
+    </div>
+    <div class="hero-mapa">
+      <div id="minimapa" aria-hidden="true"></div>
+      <a class="hero-mapa-overlay" href="mapa_impacto_fmcn.html" aria-label="Abrir el mapa interactivo de impacto">
+        <span class="hero-mapa-cta" data-i18n="hero_mapa_cta">Ver los 16 programas en el mapa →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIFRAS GLOBALES ============ -->
+<section class="cifras" data-screen-label="Cifras globales" aria-label="Cifras globales del portafolio">
+  <div class="cifras-grid" id="cifras-grid"></div>
+</section>
+
+<!-- ============ TIPOS DE INTERVENCIÓN ============ -->
+<section class="bloque" data-screen-label="Tipos de intervención">
+  <div class="wrap">
+    <div class="bloque-head">
+      <h3 data-i18n="tipos_titulo">Cinco formas de intervenir en el territorio</h3>
+      <p data-i18n="tipos_intro">Cada programa del portafolio actúa a través de una de estas líneas de intervención — los mismos colores que verás en el mapa.</p>
+    </div>
+    <div class="tipos" id="tipos-grid"></div>
+  </div>
+</section>
+
+<!-- ============ PROGRAMAS DESTACADOS ============ -->
+<section class="bloque alterno" id="programas" data-screen-label="Programas destacados">
+  <div class="wrap">
+    <div class="bloque-head">
+      <h3 data-i18n="prog_titulo">Programas destacados</h3>
+      <p data-i18n="prog_intro">Una muestra del portafolio 2025 — del fondo patrimonial más antiguo a la contribución de México a la meta global 30x30.</p>
+    </div>
+    <div class="programas" id="programas-grid"></div>
+  </div>
+</section>
+
+<!-- ============ CIERRE ============ -->
+<section class="cierre" data-screen-label="Cierre">
+  <div class="wrap">
+    <h3 data-i18n="cierre_titulo">Una ventana al trabajo de cientos de organizaciones en el territorio</h3>
+    <p data-i18n="cierre_texto">Explora dónde y cómo el financiamiento de largo plazo se convierte en hectáreas conservadas, especies protegidas y comunidades fortalecidas.</p>
+    <div class="hero-cta">
+      <a class="btn" href="mapa_impacto_fmcn.html" data-i18n="cierre_cta1">Explorar el mapa →</a>
+      <a class="enlace" href="https://fmcn.org" target="_blank" rel="noopener" data-i18n="cierre_cta2">Conoce más en fmcn.org ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer data-screen-label="Footer">
+  <div class="footer-inner">
+    <div class="footer-marca">
+      <div class="logo-fmcn" aria-hidden="true">FMCN</div>
+      <span data-i18n="footer_texto">Fondo Mexicano para la Conservación de la Naturaleza — Atlas de impacto territorial 2025.</span>
+    </div>
+    <div class="footer-links">
+      <a href="mapa_impacto_fmcn.html" data-i18n="nav_mapa">Mapa de impacto</a>
+      <a href="https://fmcn.org" target="_blank" rel="noopener">fmcn.org ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* =====================================================
+   DATOS — condensados de Dataimpacto.md / Contenido.md
+   ===================================================== */
+const BURBUJAS = [
+  { lat:19.5,  lng:-89.5,   color:"#3C3489", r:22 },
+  { lat:16.8,  lng:-93.1,   color:"#185FA5", r:22 },
+  { lat:20.6,  lng:-104.0,  color:"#185FA5", r:8  },
+  { lat:19.8,  lng:-99.5,   color:"#0F6E56", r:8  },
+  { lat:22.5,  lng:-98.8,   color:"#0F6E56", r:16 },
+  { lat:30.5,  lng:-109.2,  color:"#BA7517", r:12 },
+  { lat:19.6,  lng:-100.2,  color:"#993C1D", r:12 },
+  { lat:27.5,  lng:-111.0,  color:"#3C3489", r:22 },
+  { lat:17.0,  lng:-96.5,   color:"#0F6E56", r:22 },
+  { lat:20.5,  lng:-87.3,   color:"#3C3489", r:16 },
+  { lat:23.6345, lng:-102.5528, color:"#0F6E56", r:22 },
+  { lat:19.9,  lng:-99.5,   color:"#185FA5", r:8  },
+  { lat:22.0,  lng:-101.0,  color:"#3C3489", r:8  },
+  { lat:21.0,  lng:-101.5,  color:"#0F6E56", r:8  },
+  { lat:18.5,  lng:-97.0,   color:"#993C1D", r:8  },
+  { lat:18.0,  lng:-99.5,   color:"#BA7517", r:8  }
+];
+
+const I18N = {
+  es: {
+    marca_sub: "Fondo Mexicano para la Conservación de la Naturaleza",
+    nav_inicio: "Inicio", nav_mapa: "Mapa de impacto", nav_programas: "Programas",
+    hero_kicker: "Impacto territorial 2025",
+    hero_titulo: "La conservación de México, en un solo mapa",
+    hero_lead: "El FMCN moviliza financiamiento de largo plazo para proteger los ecosistemas del país: 26 proyectos activos, 53.5 millones de hectáreas financiadas y 369 organizaciones locales trabajando en el territorio.",
+    hero_cta1: "Explorar el mapa interactivo →",
+    hero_cta2: "Conoce al FMCN ↗",
+    hero_mapa_cta: "Ver los 16 programas en el mapa →",
+    tipos_titulo: "Cinco formas de intervenir en el territorio",
+    tipos_intro: "Cada programa del portafolio actúa a través de una de estas líneas de intervención — los mismos colores que verás en el mapa.",
+    prog_titulo: "Programas destacados",
+    prog_intro: "Una muestra del portafolio 2025 — del fondo patrimonial más antiguo a la contribución de México a la meta global 30x30.",
+    prog_cta: "Ver en el mapa →",
+    cierre_titulo: "Una ventana al trabajo de cientos de organizaciones en el territorio",
+    cierre_texto: "Explora dónde y cómo el financiamiento de largo plazo se convierte en hectáreas conservadas, especies protegidas y comunidades fortalecidas.",
+    cierre_cta1: "Explorar el mapa →",
+    cierre_cta2: "Conoce más en fmcn.org ↗",
+    footer_texto: "Fondo Mexicano para la Conservación de la Naturaleza — Atlas de impacto territorial 2025.",
+    programas_lbl: "programas",
+    cifras: [
+      { num: "53.5M", lbl: "hectáreas financiadas" },
+      { num: "26", lbl: "proyectos activos" },
+      { num: "3,189", lbl: "donativos otorgados" },
+      { num: "125,661", lbl: "personas beneficiadas" },
+      { num: "232", lbl: "ANP federales" }
+    ],
+    tipos: [
+      { color:"#0F6E56", n:5, t:"ANP federales", d:"Fortalecimiento y financiamiento de largo plazo para áreas naturales protegidas." },
+      { color:"#185FA5", n:3, t:"Cuencas hidrográficas", d:"Restauración y manejo de las cuencas que sostienen agua, suelo y ciudades." },
+      { color:"#3C3489", n:4, t:"Costero-marino", d:"Arrecifes, manglares y pesquerías del Caribe, el Golfo y el Pacífico." },
+      { color:"#BA7517", n:2, t:"Paisaje productivo", d:"Ranchos, ejidos y producción compatible con la conservación." },
+      { color:"#993C1D", n:2, t:"Especie / fondo patrimonial", d:"Fondos dedicados a especies emblemáticas y sitios críticos." }
+    ],
+    programas: [
+      { color:"#0F6E56", tipo:"ANP federales", nombre:"MEx30x30", cifra:"98,000,000 ha · 232 ANP",
+        d:"Contribución de México a la meta global de proteger el 30% del territorio para 2030, con GBFF, GEF y Conservation International." },
+      { color:"#0F6E56", tipo:"ANP federales", nombre:"FANP — Fondo para ANP", cifra:"53,477,130 ha · 425 especies",
+        d:"Fondo patrimonial de largo plazo que complementa el presupuesto público de CONANP: vigilancia, monitoreo y atención a contingencias." },
+      { color:"#993C1D", tipo:"Especie / fondo patrimonial", nombre:"Fondo Mariposa Monarca", cifra:"91% de la zona núcleo · 33 ejidos",
+        d:"Protección de la Reserva de la Biosfera mediante pagos por conservación a comunidades de Michoacán y Estado de México." },
+      { color:"#3C3489", tipo:"Costero-marino", nombre:"Fondo Golfo de California", cifra:"800,000 ha · 136 iniciativas",
+        d:"Desde 2001: restauración coralina en Cabo Pulmo y conservación marina en cuatro estados del noroeste." }
+    ]
+  },
+  en: {
+    marca_sub: "Mexican Fund for the Conservation of Nature",
+    nav_inicio: "Home", nav_mapa: "Impact map", nav_programas: "Programs",
+    hero_kicker: "Territorial impact 2025",
+    hero_titulo: "Mexico's conservation, on a single map",
+    hero_lead: "FMCN mobilizes long-term financing to protect the country's ecosystems: 26 active projects, 53.5 million hectares financed and 369 local organizations working on the ground.",
+    hero_cta1: "Explore the interactive map →",
+    hero_cta2: "About FMCN ↗",
+    hero_mapa_cta: "See all 16 programs on the map →",
+    tipos_titulo: "Five ways of working in the territory",
+    tipos_intro: "Every program in the portfolio acts through one of these intervention lines — the same colors you'll see on the map.",
+    prog_titulo: "Featured programs",
+    prog_intro: "A sample of the 2025 portfolio — from the oldest endowment fund to Mexico's contribution to the global 30x30 goal.",
+    prog_cta: "View on the map →",
+    cierre_titulo: "A window into the work of hundreds of organizations on the ground",
+    cierre_texto: "Explore where and how long-term financing becomes conserved hectares, protected species and stronger communities.",
+    cierre_cta1: "Explore the map →",
+    cierre_cta2: "Learn more at fmcn.org ↗",
+    footer_texto: "Mexican Fund for the Conservation of Nature — 2025 territorial impact atlas.",
+    programas_lbl: "programs",
+    cifras: [
+      { num: "53.5M", lbl: "hectares financed" },
+      { num: "26", lbl: "active projects" },
+      { num: "3,189", lbl: "grants awarded" },
+      { num: "125,661", lbl: "people benefited" },
+      { num: "232", lbl: "federal protected areas" }
+    ],
+    tipos: [
+      { color:"#0F6E56", n:5, t:"Federal protected areas", d:"Strengthening and long-term financing for natural protected areas." },
+      { color:"#185FA5", n:3, t:"Watersheds", d:"Restoring and managing the watersheds that sustain water, soil and cities." },
+      { color:"#3C3489", n:4, t:"Coastal-marine", d:"Reefs, mangroves and fisheries of the Caribbean, the Gulf and the Pacific." },
+      { color:"#BA7517", n:2, t:"Productive landscape", d:"Ranches, ejidos and production compatible with conservation." },
+      { color:"#993C1D", n:2, t:"Species / endowment", d:"Dedicated funds for emblematic species and critical sites." }
+    ],
+    programas: [
+      { color:"#0F6E56", tipo:"Federal protected areas", nombre:"MEx30x30", cifra:"98,000,000 ha · 232 PAs",
+        d:"Mexico's contribution to the global goal of protecting 30% of its territory by 2030, with GBFF, GEF and Conservation International." },
+      { color:"#0F6E56", tipo:"Federal protected areas", nombre:"FANP — Protected Areas Fund", cifra:"53,477,130 ha · 425 species",
+        d:"Long-term endowment complementing CONANP's public budget: surveillance, monitoring and contingency response." },
+      { color:"#993C1D", tipo:"Species / endowment", nombre:"Monarch Butterfly Fund", cifra:"91% of the core zone · 33 ejidos",
+        d:"Protection of the Biosphere Reserve through conservation payments to communities in Michoacán and Estado de México." },
+      { color:"#3C3489", tipo:"Coastal-marine", nombre:"Gulf of California Fund", cifra:"800,000 ha · 136 initiatives",
+        d:"Since 2001: coral restoration in Cabo Pulmo and marine conservation across four northwestern states." }
+    ]
+  }
+};
+let lang = "es";
+const t = k => I18N[lang][k];
+
+/* =====================================================
+   MINI-MAPA HERO (estático, clic → mapa completo)
+   ===================================================== */
+const minimapa = L.map("minimapa", {
+  zoomControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false,
+  boxZoom:false, keyboard:false, touchZoom:false, attributionControl:true
+}).setView([23.9, -102.0], 4);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: "abcd", maxZoom: 19
+}).addTo(minimapa);
+BURBUJAS.forEach(b => {
+  L.circleMarker([b.lat, b.lng], {
+    radius: Math.max(5, b.r * 0.6),
+    color: "rgba(255,255,255,.9)", weight: 1.5,
+    fillColor: b.color, fillOpacity: .92, interactive: false
+  }).addTo(minimapa);
+});
+
+/* =====================================================
+   RENDER DINÁMICO
+   ===================================================== */
+function renderCifras(){
+  const g = document.getElementById("cifras-grid");
+  g.innerHTML = "";
+  t("cifras").forEach(c => {
+    const div = document.createElement("div");
+    div.className = "cifra";
+    div.innerHTML = '<span class="num">' + c.num + '</span><span class="lbl">' + c.lbl + '</span>';
+    g.appendChild(div);
+  });
+}
+
+function renderTipos(){
+  const g = document.getElementById("tipos-grid");
+  g.innerHTML = "";
+  t("tipos").forEach(tp => {
+    const div = document.createElement("div");
+    div.className = "tipo";
+    div.style.setProperty("--tipo-color", tp.color);
+    div.innerHTML =
+      '<div class="tipo-dot"></div>' +
+      '<h4>' + tp.t + '</h4>' +
+      '<span class="cuenta">' + tp.n + ' ' + t("programas_lbl") + '</span>' +
+      '<p>' + tp.d + '</p>';
+    g.appendChild(div);
+  });
+}
+
+function renderProgramas(){
+  const g = document.getElementById("programas-grid");
+  g.innerHTML = "";
+  t("programas").forEach(p => {
+    const a = document.createElement("a");
+    a.className = "programa";
+    a.href = "mapa_impacto_fmcn.html";
+    a.style.setProperty("--prog-color", p.color);
+    a.setAttribute("aria-label", p.nombre + " — " + t("prog_cta"));
+    a.innerHTML =
+      '<div class="prog-top">' +
+        '<span class="badge-tipo"><i></i>' + p.tipo + '</span>' +
+        '<span class="prog-flecha">→</span>' +
+      '</div>' +
+      '<h4>' + p.nombre + '</h4>' +
+      '<span class="prog-cifra">' + p.cifra + '</span>' +
+      '<p>' + p.d + '</p>' +
+      '<span class="prog-cta">' + t("prog_cta") + '</span>';
+    g.appendChild(a);
+  });
+}
+
+/* =====================================================
+   IDIOMA
+   ===================================================== */
+function setLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  document.getElementById("lang-es").setAttribute("aria-pressed", String(l === "es"));
+  document.getElementById("lang-en").setAttribute("aria-pressed", String(l === "en"));
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
+  renderCifras();
+  renderTipos();
+  renderProgramas();
+}
+
+/* ===== Init ===== */
+renderCifras();
+renderTipos();
+renderProgramas();
+</script>
+
+<style id="__om-edit-overrides"></style>
+</body>
+</html>

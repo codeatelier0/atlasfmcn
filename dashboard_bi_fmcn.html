@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BI &amp; Indicadores — Cartera FMCN 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --verde:#0F6E56; --azul:#185FA5; --oliva:#a7a337;
+    --texto:#111827; --texto-sec:#6B7280;
+    --fondo:#F9FAFB; --blanco:#FFFFFF; --borde:#E5E7EB;
+    --sem-verde:#1a7a4a; --sem-amarillo:#f4c744; --sem-rojo:#c0392b;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Open Sans',sans-serif; font-size:14px; line-height:1.55;
+    color:var(--texto); background:var(--fondo);
+  }
+  h1,h2,h3,h4,button,select{ font-family:'Lato',sans-serif; }
+  .wrap{ max-width:1280px; margin:0 auto; padding:0 24px; }
+
+  /* ============ HEADER ============ */
+  header{ background:var(--blanco); border-bottom:1px solid var(--borde); position:sticky; top:0; z-index:900; }
+  .header-inner{
+    display:flex; align-items:center; gap:16px; padding:12px 24px;
+    max-width:1280px; margin:0 auto; overflow-x:auto;
+  }
+  .volver{
+    font-size:13px; color:var(--azul); text-decoration:none; font-weight:600;
+    white-space:nowrap; transition:color .2s ease;
+  }
+  .volver:hover{ text-decoration:underline; }
+  .logo-fmcn{
+    width:40px; height:40px; background:var(--verde); color:#fff; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.5px;
+  }
+  .marca h1{ font-size:18px; font-weight:600; line-height:1.2; white-space:nowrap; }
+  .marca p{ font-size:12px; color:var(--texto-sec); white-space:nowrap; }
+  .badge-vista{
+    background:var(--oliva); color:#111827; font-family:'Lato',sans-serif;
+    font-size:11.5px; font-weight:700; padding:4px 12px; border-radius:20px;
+    white-space:nowrap; flex:0 0 auto;
+  }
+  .header-derecha{ margin-left:auto; display:flex; align-items:center; gap:14px; flex:0 0 auto; }
+  .lang-toggle{ display:flex; border:1px solid var(--borde); border-radius:20px; overflow:hidden; }
+  .lang-toggle button{
+    border:none; background:transparent; padding:5px 11px; font-size:12px; font-weight:700;
+    color:var(--texto-sec); cursor:pointer; transition:background .2s ease,color .2s ease;
+  }
+  .lang-toggle button[aria-pressed="true"]{ background:var(--azul); color:#fff; }
+
+  /* ============ ZONA 1 — KPIs ============ */
+  .zona1{ padding:24px 0 4px; }
+  .kpis-pub{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  .kpis-priv{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:12px; }
+  .kpi-card{
+    position:relative; background:var(--blanco); border:1px solid var(--borde);
+    border-radius:8px; padding:16px;
+  }
+  .kpi-card .valor{
+    font-family:'Lato',sans-serif; font-size:23px; font-weight:700;
+    color:var(--verde); line-height:1.15; display:block; transition:opacity .2s ease;
+  }
+  .kpis-priv .kpi-card .valor{ font-size:19px; }
+  .kpi-card .etiqueta{ font-size:12px; color:var(--texto-sec); display:block; margin-top:4px; line-height:1.4; }
+  .kpi-card .badge-privado{
+    position:absolute; top:10px; right:10px; background:var(--oliva); color:#111827;
+    font-family:'Lato',sans-serif; font-size:10px; font-weight:700;
+    padding:2px 9px; border-radius:20px;
+  }
+  .nota-filtro{
+    display:none; font-size:12px; color:var(--texto-sec); font-style:italic; margin-top:10px;
+  }
+  .nota-filtro.visible{ display:block; }
+
+  /* ============ LAYOUT PRINCIPAL ============ */
+  .principal{ display:flex; gap:20px; align-items:flex-start; padding:20px 0 8px; }
+
+  /* ============ ZONA 2 — FILTROS ============ */
+  aside.filtros{
+    flex:0 0 240px; background:var(--blanco); border:1px solid var(--borde);
+    border-radius:8px; padding:18px; position:sticky; top:76px;
+  }
+  .filtros h3{
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--texto-sec); margin-bottom:10px;
+  }
+  .filtros .grupo + .grupo{ margin-top:20px; }
+  .pills{ display:flex; flex-wrap:wrap; gap:7px; }
+  .pill{
+    border:1px solid var(--borde); background:var(--blanco); color:var(--texto-sec);
+    font-family:'Lato',sans-serif; font-weight:600; font-size:12px;
+    padding:5px 12px; border-radius:20px; cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .pill:hover{ border-color:var(--texto-sec); }
+  .pill[aria-pressed="true"]{ background:var(--pill-color,var(--texto)); border-color:var(--pill-color,var(--texto)); color:#fff; }
+  #filtro-donante{
+    width:100%; font-size:13px; font-weight:600; color:var(--texto);
+    border:1px solid var(--borde); border-radius:8px; padding:8px 10px;
+    background:var(--blanco); cursor:pointer; font-family:'Lato',sans-serif;
+    transition:border-color .2s ease;
+  }
+  #filtro-donante:hover{ border-color:var(--verde); }
+  .btn-limpiar{
+    margin-top:20px; width:100%; border:1px solid var(--azul); background:transparent;
+    color:var(--azul); font-family:'Lato',sans-serif; font-weight:700; font-size:12.5px;
+    padding:7px 14px; border-radius:20px; cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .btn-limpiar:hover{ background:var(--azul); color:#fff; }
+
+  /* ============ CONTENIDO (gráficas + tabla) ============ */
+  .contenido{ flex:1; min-width:0; }
+  .graficas{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grafica-card{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:8px; padding:16px;
+  }
+  .grafica-card h3{ font-size:14px; font-weight:700; }
+  .grafica-card .sub{ font-size:11.5px; color:var(--texto-sec); margin-top:1px; }
+  .grafica-card .lienzo{ position:relative; height:260px; margin-top:10px; }
+  .grafica-card .lienzo.alto{ height:330px; }
+
+  /* ============ TABLA ============ */
+  .tabla-card{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:8px;
+    margin-top:14px; padding:16px;
+  }
+  .tabla-card h2{ font-size:16px; font-weight:700; margin-bottom:12px; }
+  .tabla-scroll{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:980px; }
+  thead th{
+    text-align:left; font-family:'Lato',sans-serif; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.06em; color:var(--texto-sec);
+    border-bottom:2px solid var(--borde); padding:8px 10px; white-space:nowrap;
+  }
+  thead th.ordenable{ cursor:pointer; user-select:none; transition:color .2s ease; }
+  thead th.ordenable:hover{ color:var(--texto); }
+  thead th .flecha{ font-size:10px; }
+  tbody td{ border-bottom:1px solid var(--borde); padding:9px 10px; vertical-align:middle; }
+  tbody tr.fila-prog:hover td{ background:var(--fondo); }
+  .prog-nombre{ display:flex; align-items:center; gap:8px; font-weight:600; white-space:nowrap; }
+  .punto-tipo{ width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+  .badge-tipo{
+    font-size:11px; font-weight:600; padding:2px 9px; border-radius:20px;
+    border:1px solid var(--borde); color:var(--texto-sec); white-space:nowrap;
+  }
+  .monto-nd{ font-size:11.5px; font-style:italic; color:var(--texto-sec); }
+  .badge-sem{ display:inline-flex; align-items:center; gap:6px; font-size:12px; white-space:nowrap; }
+  .badge-sem .circ{ width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+  .barra-prog{ width:110px; height:8px; background:var(--borde); border-radius:20px; overflow:hidden; }
+  .barra-prog .relleno{ height:100%; border-radius:20px; transition:width .2s ease; }
+  .cumpl-celda{ display:flex; align-items:center; gap:8px; }
+  .cumpl-celda .pct{ font-size:12px; font-weight:600; width:34px; }
+  .btn-ficha{
+    border:1px solid var(--azul); background:transparent; color:var(--azul);
+    font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px;
+    padding:4px 12px; border-radius:20px; cursor:pointer; white-space:nowrap;
+    transition:background .2s ease, color .2s ease;
+  }
+  .btn-ficha:hover, .btn-ficha[aria-expanded="true"]{ background:var(--azul); color:#fff; }
+
+  /* ficha expandible */
+  tr.fila-ficha td{ padding:0; border-bottom:1px solid var(--borde); background:var(--fondo); }
+  .ficha-anim{ max-height:0; overflow:hidden; transition:max-height .2s ease; }
+  .ficha-anim.abierta{ max-height:760px; }
+  .ficha-inner{ padding:18px 22px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .ficha-contexto{ grid-column:1 / -1; font-size:12.5px; color:var(--texto-sec); }
+  .ficha-bloque h4{
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--texto-sec); margin-bottom:8px;
+  }
+  .ficha-bloque .ilustrativo{ font-size:11px; color:var(--texto-sec); font-style:italic; }
+  .badge-patrimonial{
+    display:inline-block; background:var(--blanco); border:1px solid var(--borde);
+    color:var(--texto-sec); font-size:12px; padding:5px 12px; border-radius:20px;
+  }
+  .fin-barra{ height:10px; background:var(--borde); border-radius:20px; overflow:hidden; max-width:340px; }
+  .fin-barra .relleno{ height:100%; background:var(--verde); border-radius:20px; }
+  .fin-texto{ font-size:12.5px; margin-top:6px; }
+  .badge-sem-grande{
+    display:inline-flex; align-items:center; gap:8px; color:#fff;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:13px;
+    padding:6px 16px; border-radius:20px;
+  }
+  .badge-sem-grande.amarillo{ color:#111827; }
+  .docs-lista{ display:flex; flex-direction:column; gap:6px; }
+  .doc-fila{ display:flex; align-items:center; gap:10px; }
+  .doc-fila .doc-nombre{ font-size:12.5px; flex:1; }
+  .btn-doc{
+    border:none; background:var(--verde); color:#fff; font-family:'Lato',sans-serif;
+    font-weight:700; font-size:11px; padding:4px 12px; border-radius:20px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; transition:opacity .2s ease;
+  }
+  .btn-doc:hover{ opacity:.85; }
+  .ficha-mapa-link{ grid-column:1 / -1; }
+  .ficha-mapa-link a{
+    color:var(--azul); font-family:'Lato',sans-serif; font-weight:700; font-size:13px;
+    text-decoration:none;
+  }
+  .ficha-mapa-link a:hover{ text-decoration:underline; }
+
+  /* ============ FOOTER ============ */
+  footer{ background:#111827; color:#F9FAFB; margin-top:32px; padding:24px 0; font-size:12px; }
+  footer .wrap{ display:flex; flex-direction:column; gap:10px; }
+  .export-btns{ display:flex; gap:10px; }
+  .btn-export{
+    border:1px solid #6B7280; background:transparent; color:#F9FAFB;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:12px;
+    padding:6px 16px; border-radius:20px; cursor:pointer;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .btn-export:hover{ border-color:var(--oliva); color:var(--oliva); }
+  footer .sec{ color:#9CA3AF; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:980px){
+    .graficas{ grid-template-columns:1fr; }
+    .ficha-inner{ grid-template-columns:1fr; }
+  }
+  @media (max-width:768px){
+    .kpis-pub{ grid-template-columns:repeat(2,1fr); }
+    .kpis-priv{ grid-template-columns:repeat(2,1fr); }
+    .principal{ flex-direction:column; }
+    aside.filtros{ position:static; flex:none; width:100%; }
+    .wrap{ padding:0 16px; }
+    .header-inner{ padding:12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header data-screen-label="Header BI">
+  <div class="header-inner">
+    <a class="volver" href="landing_privado_fmcn.html" data-i18n="volver" aria-label="Volver al portal privado">← Portal privado</a>
+    <div class="logo-fmcn" aria-hidden="true">FMCN</div>
+    <div class="marca">
+      <h1 data-i18n="titulo">BI &amp; Indicadores</h1>
+      <p data-i18n="subtitulo">Cartera FMCN 2025</p>
+    </div>
+    <span class="badge-vista" data-i18n="vista" aria-label="Esta pantalla siempre se muestra en modo privado">Vista: Privada</span>
+    <div class="header-derecha">
+      <div class="lang-toggle" role="group" aria-label="Selector de idioma">
+        <button type="button" id="lang-es" aria-pressed="true" aria-label="Español">ES</button>
+        <button type="button" id="lang-en" aria-pressed="false" aria-label="English">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ ZONA 1 — KPIs ============ -->
+<section class="zona1 wrap" data-screen-label="KPIs globales">
+  <div class="kpis-pub" id="kpis-pub" role="list" aria-label="KPIs globales de cartera 2025"></div>
+  <div class="kpis-priv" id="kpis-priv" role="list" aria-label="KPIs privados de gestión interna"></div>
+  <p class="nota-filtro" id="nota-filtro" data-i18n="nota_filtro">Suma aproximada del subconjunto filtrado (ilustrativa) — en producción los agregados se calculan en PostGIS evitando doble conteo.</p>
+</section>
+
+<!-- ============ PRINCIPAL ============ -->
+<div class="principal wrap">
+
+  <!-- ZONA 2 — Filtros -->
+  <aside class="filtros" data-screen-label="Filtros" aria-label="Filtros de cartera">
+    <div class="grupo">
+      <h3 data-i18n="f_tipo">Tipo de intervención</h3>
+      <div class="pills" id="pills-tipo" role="group" aria-label="Filtrar por tipo de intervención"></div>
+    </div>
+    <div class="grupo">
+      <h3 data-i18n="f_donante">Donante / mecanismo</h3>
+      <select id="filtro-donante" aria-label="Filtrar por donante o mecanismo financiero"></select>
+    </div>
+    <button type="button" class="btn-limpiar" id="btn-limpiar" data-i18n="limpiar" aria-label="Limpiar todos los filtros">Limpiar filtros</button>
+  </aside>
+
+  <!-- Gráficas + tabla -->
+  <div class="contenido">
+    <div class="graficas" data-screen-label="Gráficas">
+      <div class="grafica-card">
+        <h3 data-i18n="g1">Hectáreas financiadas por programa (top 10)</h3>
+        <div class="lienzo"><canvas id="chart-ha" aria-label="Gráfica de hectáreas financiadas por programa"></canvas></div>
+      </div>
+      <div class="grafica-card">
+        <h3 data-i18n="g2">Programas por donante / mecanismo</h3>
+        <div class="lienzo"><canvas id="chart-donante" aria-label="Gráfica de programas por donante o mecanismo"></canvas></div>
+      </div>
+      <div class="grafica-card">
+        <h3 data-i18n="g3">Programas por tipo de intervención</h3>
+        <div class="lienzo"><canvas id="chart-tipo" aria-label="Gráfica de programas por tipo de intervención"></canvas></div>
+      </div>
+      <div class="grafica-card">
+        <h3 data-i18n="g4">Cumplimiento de indicadores por programa (%)</h3>
+        <p class="sub" data-i18n="g4_sub">(ilustrativo)</p>
+        <div class="lienzo alto"><canvas id="chart-cumpl" aria-label="Gráfica de cumplimiento de indicadores por programa"></canvas></div>
+      </div>
+    </div>
+
+    <div class="tabla-card" data-screen-label="Tabla cartera">
+      <h2 data-i18n="tabla_titulo">Cartera de programas 2025</h2>
+      <div class="tabla-scroll">
+        <table aria-label="Cartera de programas FMCN 2025">
+          <thead>
+            <tr>
+              <th class="ordenable" data-orden="nombre" data-i18n="th_programa" aria-label="Ordenar por programa" tabindex="0">Programa</th>
+              <th data-i18n="th_tipo">Tipo</th>
+              <th data-i18n="th_donante">Donante / mecanismo</th>
+              <th data-i18n="th_monto">Monto USD</th>
+              <th class="ordenable" data-orden="ha" data-i18n="th_ha" aria-label="Ordenar por hectáreas" tabindex="0">Ha</th>
+              <th data-i18n="th_personas">Personas</th>
+              <th data-i18n="th_orgs">Orgs.</th>
+              <th data-i18n="th_especies">Especies</th>
+              <th data-i18n="th_semaforo">Semáforo</th>
+              <th class="ordenable" data-orden="cumplimiento_pct" data-i18n="th_cumpl" aria-label="Ordenar por cumplimiento" tabindex="0">Cumplimiento</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabla-cuerpo"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer data-screen-label="Footer">
+  <div class="wrap">
+    <div class="export-btns">
+      <button type="button" class="btn-export" id="btn-csv" data-i18n="exp_csv" aria-label="Exportar la cartera en CSV">Exportar CSV</button>
+      <button type="button" class="btn-export" id="btn-pdf" data-i18n="exp_pdf" aria-label="Exportar la cartera en PDF">Exportar PDF</button>
+    </div>
+    <p class="sec" data-i18n="fuente">Fuente de datos: Informe Anual FMCN 2025 (Dataimpacto.md). Indicadores SROI/HHI/PER ilustrativos — pendientes de validación con LOVIS/SISEP.</p>
+    <p class="sec"><span data-i18n="generado">Prototipo estático generado el</span> <span id="fecha-build"></span></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =====================================================
+     DATOS — base: array `programas` de Prompt ux.md
+     (campos id, nombre, tipo_intervencion, color, ha,
+      estados, descripcion, kpis reutilizados sin modificar)
+     Extensión BI: donante / monto_usd / nivel_acceso_financiero
+     (Dataimpacto.md, 4_datastr.md §4.1); semaforo y
+     cumplimiento_pct // ilustrativo
+     ===================================================== */
+  var programas = [
+    { id:"accion", nombre:"ACCIÓN", tipo_intervencion:"costero", color:"#3C3489", ha:2000000,
+      estados:"Campeche, Q. Roo, Yucatán",
+      descripcion:"Adaptación basada en ecosistemas para 20 ANP costeras y marinas frente al cambio climático.",
+      descripcion_en:"Ecosystem-based adaptation for 20 coastal and marine protected areas facing climate change.",
+      kpis:{ hectareas:"2,000,000", personas:"N/D", organizaciones:20, especies:"N/D" },
+      donante:"Green Climate Fund (GCF)", monto_usd:25000000, nivel_acceso_financiero:"publico",
+      semaforo:"verde", cumplimiento_pct:92 }, // ilustrativo: semaforo, cumplimiento_pct
+
+    { id:"conecta", nombre:"CONECTA / ORIGEN", tipo_intervencion:"cuenca", color:"#185FA5", ha:1100000,
+      estados:"Chiapas, Chihuahua, Jalisco, Veracruz",
+      descripcion:"Planes de adaptación en microcuencas (PAMIC) en 15 cuencas prioritarias. Restauración de paisajes degradados.",
+      descripcion_en:"Micro-watershed adaptation plans (PAMIC) across 15 priority watersheds. Restoration of degraded landscapes.",
+      kpis:{ hectareas:"1,100,000", personas:917, organizaciones:"N/D", especies:"N/D" },
+      donante:"GEF (Banco Mundial / Conservation International)", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"amarillo", cumplimiento_pct:72 }, // ilustrativo
+
+    { id:"rios", nombre:"RÍOS", tipo_intervencion:"cuenca", color:"#185FA5", ha:5885,
+      estados:"Jalisco, Veracruz",
+      descripcion:"Restauración hidrológica y resiliencia climática en cuencas Ameca-Mascota y Jamapa.",
+      descripcion_en:"Hydrological restoration and climate resilience in the Ameca-Mascota and Jamapa watersheds.",
+      kpis:{ hectareas:"5,885", personas:3577, organizaciones:12, especies:"N/D" },
+      donante:"Green Climate Fund (GCF)", monto_usd:9000000, nivel_acceso_financiero:"publico",
+      semaforo:"verde", cumplimiento_pct:88 }, // ilustrativo
+
+    { id:"cosmos", nombre:"CoSMoS", tipo_intervencion:"anp", color:"#0F6E56", ha:1921,
+      estados:"Centro de México — 19 ANP", estados_en:"Central Mexico — 19 protected areas",
+      descripcion:"Brigadas de incendios, monitoreo de especies amenazadas y restauración en 19 ANP federales.",
+      descripcion_en:"Fire brigades, threatened-species monitoring and restoration across 19 federal protected areas.",
+      kpis:{ hectareas:"1,921", personas:853, organizaciones:"N/D", especies:36 },
+      donante:"KfW (Cooperación Alemana)", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:85 }, // ilustrativo
+
+    { id:"sierra-mar", nombre:"Sierra y Mar", tipo_intervencion:"anp", color:"#0F6E56", ha:500000,
+      estados:"Noreste, Sierra Madre Oriental, Eje Neovolcánico", estados_en:"Northeast, Sierra Madre Oriental, Neovolcanic Axis",
+      descripcion:"Fortalecimiento de 14 ANP: brigadas, turismo de naturaleza y manejo de cuencas.",
+      descripcion_en:"Strengthening 14 protected areas: brigades, nature tourism and watershed management.",
+      kpis:{ hectareas:"500,000", personas:"N/D", organizaciones:14, especies:"N/D" },
+      donante:"KfW / Fondo patrimonial FMCN", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:81 }, // ilustrativo
+
+    { id:"ojos", nombre:"Cuenca de Los Ojos", tipo_intervencion:"paisaje", color:"#BA7517", ha:50000,
+      estados:"Sonora (frontera Arizona)", estados_en:"Sonora (Arizona border)",
+      descripcion:"Corredor biológico binacional México-EUA. 9 ranchos privados certificados como ADVC.",
+      descripcion_en:"Binational Mexico-USA biological corridor. 9 private ranches certified as voluntary conservation areas.",
+      kpis:{ hectareas:"50,000", personas:"N/D", organizaciones:9, especies:"N/D" },
+      donante:"Fondo Wyss / Fondo patrimonial FMCN", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"amarillo", cumplimiento_pct:68 }, // ilustrativo
+
+    { id:"monarca", nombre:"Fondo Mariposa Monarca", tipo_intervencion:"especie", color:"#993C1D", ha:12367,
+      estados:"Michoacán, Estado de México",
+      descripcion:"Protección del 91% de la zona núcleo de la Reserva de la Biosfera. Pagos por conservación a 33 ejidos.",
+      descripcion_en:"Protection of 91% of the Biosphere Reserve core zone. Conservation payments to 33 ejidos.",
+      kpis:{ hectareas:"12,367", personas:"N/D", organizaciones:33, especies:1 },
+      donante:"Fondo patrimonial FMCN", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"rojo", cumplimiento_pct:52 }, // ilustrativo
+
+    { id:"golfo-california", nombre:"Fondo Golfo de California", tipo_intervencion:"costero", color:"#3C3489", ha:800000,
+      estados:"Baja California, Sonora, Sinaloa, Nayarit",
+      descripcion:"136 iniciativas desde 2001. Restauración coralina en Cabo Pulmo y conservación marina.",
+      descripcion_en:"136 initiatives since 2001. Coral restoration in Cabo Pulmo and marine conservation.",
+      kpis:{ hectareas:"800,000", personas:"N/D", organizaciones:52, especies:"N/D" },
+      donante:"Fondo patrimonial FMCN / Lindblad-National Geographic", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"amarillo", cumplimiento_pct:75 }, // ilustrativo
+
+    { id:"mex3030", nombre:"MEx30x30", tipo_intervencion:"anp", color:"#0F6E56", ha:98000000,
+      estados:"Nacional — 232 ANP federales", estados_en:"Nationwide — 232 federal protected areas",
+      descripcion:"Contribución de México a la meta global de proteger el 30% del territorio para 2030.",
+      descripcion_en:"Mexico's contribution to the global goal of protecting 30% of its territory by 2030.",
+      kpis:{ hectareas:"98,000,000", personas:"N/D", organizaciones:"N/D", especies:425 },
+      donante:"GBFF / GEF (Conservation International)", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:95 }, // ilustrativo
+
+    { id:"csam", nombre:"C-SAM / Arrecife Mesoamericano", tipo_intervencion:"costero", color:"#3C3489", ha:120000,
+      estados:"Quintana Roo — Caribe mexicano", estados_en:"Quintana Roo — Mexican Caribbean",
+      descripcion:"40 proyectos desde 2015 en el segundo arrecife más grande del mundo. Cooperativas pesqueras y gobernanza marina.",
+      descripcion_en:"40 projects since 2015 in the world's second-largest reef. Fishing cooperatives and marine governance.",
+      kpis:{ hectareas:"120,000", personas:"N/D", organizaciones:40, especies:"N/D" },
+      donante:"FFEM / KfW / The Summit Foundation", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"amarillo", cumplimiento_pct:65 }, // ilustrativo
+
+    { id:"fanp", nombre:"FANP — Fondo para ANP", tipo_intervencion:"anp", color:"#0F6E56", ha:53477130,
+      estados:"Nacional — de 70 a 95 ANP federales (2026)", estados_en:"Nationwide — from 70 to 95 federal protected areas (2026)",
+      descripcion:"Fondo patrimonial de largo plazo que complementa el presupuesto público de CONANP: vigilancia, monitoreo y atención a contingencias en ANP federales.",
+      descripcion_en:"Long-term endowment complementing CONANP's public budget: surveillance, monitoring and contingency response in federal protected areas.",
+      kpis:{ hectareas:"53,477,130", personas:"N/D", organizaciones:"N/D", especies:425 },
+      donante:"Fondo patrimonial FMCN", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:90 }, // ilustrativo
+
+    { id:"cuencas-ciudades", nombre:"Cuencas y Ciudades", tipo_intervencion:"cuenca", color:"#185FA5", ha:1755,
+      estados:"Cuencas que abastecen ciudades de México", estados_en:"Watersheds supplying Mexican cities",
+      descripcion:"Conservación, restauración y reconversión productiva en cuencas que abastecen ciudades. 2,710 personas han adoptado prácticas sostenibles.",
+      descripcion_en:"Conservation, restoration and productive conversion in city-supplying watersheds. 2,710 people have adopted sustainable practices.",
+      kpis:{ hectareas:"1,755", personas:2710, organizaciones:"N/D", especies:"N/D" },
+      donante:"Fundación Gonzalo Río Arronte", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:83 }, // ilustrativo
+
+    { id:"c6", nombre:"C6 — Cuencas costeras", tipo_intervencion:"costero", color:"#3C3489", ha:0,
+      estados:"Cuencas costeras del Golfo de México y Golfo de California", estados_en:"Coastal watersheds of the Gulf of Mexico and Gulf of California",
+      descripcion:"Conservación de biodiversidad y mitigación climática en 16 cuencas costeras vulnerables, con 10 ANP en su fase original.",
+      descripcion_en:"Biodiversity conservation and climate mitigation in 16 vulnerable coastal watersheds, with 10 protected areas in its original phase.",
+      kpis:{ hectareas:"N/D", personas:"N/D", organizaciones:"N/D", especies:"N/D" },
+      donante:"GEF / Banco Mundial (FGM / FONNOR)", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"rojo", cumplimiento_pct:45 }, // ilustrativo
+
+    { id:"fomafur", nombre:"FOMAFUR", tipo_intervencion:"anp", color:"#0F6E56", ha:1260,
+      estados:"35 ANP y zonas de influencia en 16 estados", estados_en:"35 protected areas and buffer zones across 16 states",
+      descripcion:"Fondo especializado en manejo del fuego y restauración forestal: 38 brigadas de fuego y 108 proyectos con 54 organizaciones.",
+      descripcion_en:"Fund specialized in fire management and forest restoration: 38 fire brigades and 108 projects with 54 organizations.",
+      kpis:{ hectareas:"1,260", personas:466, organizaciones:54, especies:"N/D" },
+      donante:"Fondo patrimonial FMCN / U.S. Forest Service", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"amarillo", cumplimiento_pct:70 }, // ilustrativo
+
+    { id:"conserva-aves", nombre:"Conserva Aves", tipo_intervencion:"especie", color:"#993C1D", ha:0,
+      estados:"8 estados — sitios prioritarios para aves", estados_en:"8 states — priority sites for birds",
+      descripcion:"Identifica y protege sitios críticos para aves amenazadas, endémicas y migratorias. En 2025, 12 iniciativas fueron seleccionadas para crear o ampliar ADVC.",
+      descripcion_en:"Identifies and protects critical sites for threatened, endemic and migratory birds. In 2025, 12 initiatives were selected to create or expand voluntary conservation areas.",
+      kpis:{ hectareas:"N/D", personas:"N/D", organizaciones:"N/D", especies:"N/D" },
+      donante:"National Audubon Society / Global Affairs Canada", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"verde", cumplimiento_pct:84 }, // ilustrativo
+
+    { id:"jorge-de-alba", nombre:"Fondo Jorge de Alba", tipo_intervencion:"paisaje", color:"#BA7517", ha:0,
+      estados:"Guerrero, Jalisco, Michoacán, San Luis Potosí, Tabasco, Veracruz",
+      descripcion:"Conservación y uso sostenible de bovinos criollos tropicales mediante selección de sementales y bancos de semen de alta calidad.",
+      descripcion_en:"Conservation and sustainable use of tropical creole cattle through sire selection and high-quality semen banks.",
+      kpis:{ hectareas:"N/D", personas:"N/D", organizaciones:"N/D", especies:"N/D" },
+      donante:"Alianza AMCROLET", monto_usd:null, nivel_acceso_financiero:"privado",
+      semaforo:"rojo", cumplimiento_pct:40 } // ilustrativo
+  ];
+
+  /* ===== Campos de ficha BI (ilustrativos — promptsistema.md §4.1) ===== */
+  programas.forEach(function(p){
+    p.avance_financiero = (p.monto_usd !== null)
+      ? { presupuesto: p.monto_usd, ejercido: Math.round(p.monto_usd * p.cumplimiento_pct / 100) } // ilustrativo
+      : null;
+    p.proximo_hito = { // ilustrativo
+      rojo:     { es:"Plan de mitigación de riesgo — revisión urgente Q3 2026", en:"Risk-mitigation plan — urgent review Q3 2026" },
+      amarillo: { es:"Revisión de medio término — Q4 2026", en:"Mid-term review — Q4 2026" },
+      verde:    { es:"Informe de avance anual — Q1 2027", en:"Annual progress report — Q1 2027" }
+    }[p.semaforo];
+    p.documentos = ["Informe de avance 2025.pdf", "Ficha técnica del programa.pdf"]; // ilustrativo
+    if (p.nivel_acceso_financiero === "publico") p.documentos.push("Convenio de financiamiento (GCF).pdf");
+  });
+
+  /* ===== Catálogos ===== */
+  var TIPOS = [
+    { key:"anp",     color:"#0F6E56", es:"ANP federales",              en:"Federal protected areas" },
+    { key:"cuenca",  color:"#185FA5", es:"Cuencas hidrográficas",      en:"Watersheds" },
+    { key:"costero", color:"#3C3489", es:"Costero-marino",             en:"Coastal-marine" },
+    { key:"paisaje", color:"#BA7517", es:"Paisaje productivo",         en:"Productive landscape" },
+    { key:"especie", color:"#993C1D", es:"Especie / fondo patrimonial", en:"Species / endowment fund" }
+  ];
+  /* Clasificación de donante por coincidencia de texto — prioridad GCF > GEF > KfW > Patrimonial > Otros */
+  function categoriaDonante(d){
+    if (d.indexOf("GCF") !== -1) return "GCF";
+    if (d.indexOf("GEF") !== -1 || d.indexOf("GBFF") !== -1) return "GEF";
+    if (d.indexOf("KfW") !== -1) return "KfW";
+    if (d.indexOf("patrimonial") !== -1) return "Patrimonial FMCN";
+    return "Otros";
+  }
+  var CAT_DONANTES = ["GCF","GEF","KfW","Patrimonial FMCN","Otros"];
+  var COLORES_DONANTE = ["#0F6E56","#185FA5","#a7a337","#3C3489","#6B7280"];
+  var SEM_COLOR = { verde:"#1a7a4a", amarillo:"#f4c744", rojo:"#c0392b" }; /* 5_crtaceptacion.md */
+  var SEM_TXT = { verde:{es:"Verde",en:"Green"}, amarillo:{es:"Amarillo",en:"Yellow"}, rojo:{es:"Rojo",en:"Red"} };
+
+  /* ===== KPIs globales — Zona 1 (3_bi.md §3.2 / Dataimpacto.md) ===== */
+  var KPIS_PUB = [
+    { id:"ha_prot",  valor:53477130, es:"ha financiadas (protección)", en:"ha funded (protection)" },
+    { id:"ha_manejo",valor:1204667,  es:"ha con manejo sostenible",    en:"ha under sustainable management" },
+    { id:"personas", valor:125661,   es:"personas con prácticas sostenibles", en:"people with sustainable practices" },
+    { id:"especies", valor:425,      es:"especies prioritarias atendidas", en:"priority species addressed" },
+    { id:"orgs",     valor:369,      es:"organizaciones locales financiadas", en:"local organizations funded" },
+    { id:"programas",valor:26,       es:"programas activos",           en:"active programs" }
+  ];
+  var KPIS_PRIV = [ // valores ilustrativos (4_datastr.md §4.5), salvo donativos (Dataimpacto.md)
+    { valor:"3,189",  es:"donativos gestionados (cartera total)", en:"grants managed (full portfolio)" },
+    { valor:"3.2x",   es:"SROI — Retorno Social de la Inversión", en:"SROI — Social Return on Investment" }, // ilustrativo
+    { valor:"0.18",   es:"HHI — Diversificación de financiamiento (cartera diversificada)", en:"HHI — Funding diversification (diversified portfolio)" }, // ilustrativo
+    { valor:"81%",    es:"PER — transferido a campo", en:"PER — transferred to the field" } // ilustrativo
+  ];
+
+  /* ===== i18n ===== */
+  var I18N = {
+    volver:{ es:"← Portal privado", en:"← Private portal" },
+    titulo:{ es:"BI & Indicadores", en:"BI & Indicators" },
+    subtitulo:{ es:"Cartera FMCN 2025", en:"FMCN Portfolio 2025" },
+    vista:{ es:"Vista: Privada", en:"View: Private" },
+    nota_filtro:{ es:"Suma aproximada del subconjunto filtrado (ilustrativa) — en producción los agregados se calculan en PostGIS evitando doble conteo.", en:"Approximate sum of the filtered subset (illustrative) — in production, aggregates are computed in PostGIS avoiding double counting." },
+    f_tipo:{ es:"Tipo de intervención", en:"Intervention type" },
+    f_donante:{ es:"Donante / mecanismo", en:"Donor / mechanism" },
+    todos:{ es:"Todos", en:"All" },
+    limpiar:{ es:"Limpiar filtros", en:"Clear filters" },
+    g1:{ es:"Hectáreas financiadas por programa (top 10)", en:"Hectares funded per program (top 10)" },
+    g2:{ es:"Programas por donante / mecanismo", en:"Programs by donor / mechanism" },
+    g3:{ es:"Programas por tipo de intervención", en:"Programs by intervention type" },
+    g4:{ es:"Cumplimiento de indicadores por programa (%)", en:"Indicator compliance per program (%)" },
+    g4_sub:{ es:"(ilustrativo)", en:"(illustrative)" },
+    tabla_titulo:{ es:"Cartera de programas 2025", en:"2025 program portfolio" },
+    th_programa:{ es:"Programa", en:"Program" }, th_tipo:{ es:"Tipo", en:"Type" },
+    th_donante:{ es:"Donante / mecanismo", en:"Donor / mechanism" }, th_monto:{ es:"Monto USD", en:"Amount USD" },
+    th_ha:{ es:"Ha", en:"Ha" }, th_personas:{ es:"Personas", en:"People" },
+    th_orgs:{ es:"Orgs.", en:"Orgs." }, th_especies:{ es:"Especies", en:"Species" },
+    th_semaforo:{ es:"Semáforo", en:"Status" }, th_cumpl:{ es:"Cumplimiento", en:"Compliance" },
+    ver_ficha:{ es:"Ver ficha ▾", en:"View file ▾" }, cerrar_ficha:{ es:"Cerrar ▴", en:"Close ▴" },
+    monto_nd:{ es:"Fondo patrimonial — monto no desagregado en fuente pública", en:"Endowment fund — amount not disaggregated in public source" },
+    fin_titulo:{ es:"Avance financiero", en:"Financial progress" },
+    fin_nd:{ es:"Fondo patrimonial — sin presupuesto anual desagregado", en:"Endowment fund — no disaggregated annual budget" },
+    fin_de:{ es:"ejercido de", en:"spent of" },
+    cumpl_titulo:{ es:"Cumplimiento de indicadores de resultados", en:"Results-indicator compliance" },
+    sem_titulo:{ es:"Semáforo de riesgo", en:"Risk status" },
+    hito_titulo:{ es:"Próximos hitos y fechas clave", en:"Upcoming milestones and key dates" },
+    docs_titulo:{ es:"Documentos adjuntos", en:"Attached documents" },
+    descargar:{ es:"Descargar", en:"Download" },
+    ver_mapa:{ es:"Ver KPIs de conservación en el mapa →", en:"View conservation KPIs on the map →" },
+    exp_csv:{ es:"Exportar CSV", en:"Export CSV" }, exp_pdf:{ es:"Exportar PDF", en:"Export PDF" },
+    fuente:{ es:"Fuente de datos: Informe Anual FMCN 2025 (Dataimpacto.md). Indicadores SROI/HHI/PER ilustrativos — pendientes de validación con LOVIS/SISEP.", en:"Data source: FMCN 2025 Annual Report (Dataimpacto.md). SROI/HHI/PER indicators are illustrative — pending validation against LOVIS/SISEP." },
+    generado:{ es:"Prototipo estático generado el", en:"Static prototype generated on" },
+    sin_dato:{ es:"—", en:"—" }
+  };
+
+  /* ===== Estado ===== */
+  var idioma = "es";
+  var tiposActivos = [];          // [] = Todos
+  var donanteActivo = "todos";
+  var orden = { col:null, dir:1 };
+  var fichaAbierta = null;
+  var charts = {};
+
+  var $ = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  function fmt(n){ return n.toLocaleString(idioma === "es" ? "es-MX" : "en-US"); }
+  function usd(n){ return "$" + n.toLocaleString("en-US"); }
+  function num(v){ return (typeof v === "number") ? v : 0; } /* "N/D" → 0 (regla Prompt mapa.md) */
+
+  function filtrosActivos(){ return tiposActivos.length > 0 || donanteActivo !== "todos"; }
+  function subconjunto(){
+    return programas.filter(function(p){
+      var okTipo = tiposActivos.length === 0 || tiposActivos.indexOf(p.tipo_intervencion) !== -1;
+      var okDon = donanteActivo === "todos" || categoriaDonante(p.donante) === donanteActivo;
+      return okTipo && okDon;
+    });
+  }
+
+  /* ============ ZONA 1 — KPIs ============ */
+  function renderKpisPub(){
+    var cont = $("#kpis-pub");
+    var sub = subconjunto();
+    var filtrado = filtrosActivos();
+    var vals;
+    if (!filtrado){
+      vals = KPIS_PUB.map(function(k){ return fmt(k.valor); });
+    } else {
+      var ha = 0, per = 0, org = 0, esp = 0;
+      sub.forEach(function(p){
+        ha += p.ha; per += num(p.kpis.personas);
+        org += num(p.kpis.organizaciones); esp += num(p.kpis.especies);
+      });
+      /* el campo `ha` ya integra los dos componentes (protección + manejo);
+         la tarjeta de manejo sostenible no se desagrega por programa → "—" */
+      vals = [ fmt(ha), I18N.sin_dato[idioma], fmt(per), fmt(esp), fmt(org), fmt(sub.length) ];
+    }
+    cont.innerHTML = KPIS_PUB.map(function(k, i){
+      return '<div class="kpi-card" role="listitem">' +
+        '<span class="valor">' + vals[i] + '</span>' +
+        '<span class="etiqueta">' + k[idioma] + '</span>' +
+      '</div>';
+    }).join("");
+    $("#nota-filtro").classList.toggle("visible", filtrado);
+  }
+  function renderKpisPriv(){
+    $("#kpis-priv").innerHTML = KPIS_PRIV.map(function(k){
+      return '<div class="kpi-card" role="listitem">' +
+        '<span class="badge-privado">' + (idioma === "es" ? "Privado" : "Private") + '</span>' +
+        '<span class="valor">' + k.valor + '</span>' +
+        '<span class="etiqueta">' + k[idioma] + '</span>' +
+      '</div>';
+    }).join("");
+  }
+
+  /* ============ ZONA 2 — Filtros ============ */
+  function renderPills(){
+    var cont = $("#pills-tipo");
+    var html = '<button type="button" class="pill" data-tipo="todos" aria-pressed="' + (tiposActivos.length === 0) + '" aria-label="' + I18N.todos[idioma] + '">' + I18N.todos[idioma] + '</button>';
+    TIPOS.forEach(function(t){
+      var activo = tiposActivos.indexOf(t.key) !== -1;
+      html += '<button type="button" class="pill" data-tipo="' + t.key + '" style="--pill-color:' + t.color + ';" aria-pressed="' + activo + '" aria-label="' + t[idioma] + '">' + t[idioma] + '</button>';
+    });
+    cont.innerHTML = html;
+  }
+  function renderDropdown(){
+    var sel = $("#filtro-donante");
+    var html = '<option value="todos">' + I18N.todos[idioma] + '</option>';
+    CAT_DONANTES.forEach(function(c){
+      var n = programas.filter(function(p){ return categoriaDonante(p.donante) === c; }).length;
+      html += '<option value="' + c + '"' + (donanteActivo === c ? " selected" : "") + '>' + c + ' (' + n + ')</option>';
+    });
+    sel.innerHTML = html;
+    sel.value = donanteActivo;
+  }
+
+  /* ============ GRÁFICAS (Chart.js, 6_stack.md §6.3) ============ */
+  var baseOpts = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    font:{ family:"'Open Sans',sans-serif" }
+  };
+  function initCharts(){
+    charts.ha = new Chart($("#chart-ha"), {
+      type:"bar",
+      data:{ labels:[], datasets:[{ data:[], backgroundColor:[] }] },
+      options: Object.assign({}, baseOpts, {
+        indexAxis:"y",
+        scales:{ x:{ ticks:{ callback:function(v){ return v >= 1e6 ? (v/1e6)+"M" : v >= 1e3 ? (v/1e3)+"k" : v; } } } }
+      })
+    });
+    charts.donante = new Chart($("#chart-donante"), {
+      type:"doughnut",
+      data:{ labels:[], datasets:[{ data:[], backgroundColor:[] }] },
+      options: Object.assign({}, baseOpts, {
+        plugins:{ legend:{ display:true, position:"right", labels:{ boxWidth:12, font:{ size:11 } } } }
+      })
+    });
+    charts.tipo = new Chart($("#chart-tipo"), {
+      type:"bar",
+      data:{ labels:[], datasets:[{ data:[], backgroundColor:[] }] },
+      options: Object.assign({}, baseOpts, {
+        scales:{ y:{ ticks:{ precision:0 } } }
+      })
+    });
+    charts.cumpl = new Chart($("#chart-cumpl"), {
+      type:"bar",
+      data:{ labels:[], datasets:[{ data:[], backgroundColor:[] }] },
+      options: Object.assign({}, baseOpts, {
+        indexAxis:"y",
+        scales:{ x:{ min:0, max:100 } }
+      })
+    });
+  }
+  function updateCharts(){
+    var sub = subconjunto();
+
+    var topHa = sub.slice().sort(function(a,b){ return b.ha - a.ha; }).slice(0,10);
+    charts.ha.data.labels = topHa.map(function(p){ return p.nombre; });
+    charts.ha.data.datasets[0].data = topHa.map(function(p){ return p.ha; });
+    charts.ha.data.datasets[0].backgroundColor = topHa.map(function(p){ return p.color; });
+    charts.ha.update();
+
+    var porCat = CAT_DONANTES.map(function(c){
+      return sub.filter(function(p){ return categoriaDonante(p.donante) === c; }).length;
+    });
+    charts.donante.data.labels = CAT_DONANTES.slice();
+    charts.donante.data.datasets[0].data = porCat;
+    charts.donante.data.datasets[0].backgroundColor = COLORES_DONANTE.slice();
+    charts.donante.update();
+
+    charts.tipo.data.labels = TIPOS.map(function(t){ return t[idioma]; });
+    charts.tipo.data.datasets[0].data = TIPOS.map(function(t){
+      return sub.filter(function(p){ return p.tipo_intervencion === t.key; }).length;
+    });
+    charts.tipo.data.datasets[0].backgroundColor = TIPOS.map(function(t){ return t.color; });
+    charts.tipo.update();
+
+    var porCumpl = sub.slice().sort(function(a,b){ return b.cumplimiento_pct - a.cumplimiento_pct; });
+    charts.cumpl.data.labels = porCumpl.map(function(p){ return p.nombre; });
+    charts.cumpl.data.datasets[0].data = porCumpl.map(function(p){ return p.cumplimiento_pct; });
+    charts.cumpl.data.datasets[0].backgroundColor = porCumpl.map(function(p){ return SEM_COLOR[p.semaforo]; });
+    charts.cumpl.update();
+  }
+
+  /* ============ TABLA ============ */
+  function tipoLabel(key){
+    var t = TIPOS.filter(function(x){ return x.key === key; })[0];
+    return t ? t[idioma] : key;
+  }
+  function renderTabla(){
+    var sub = subconjunto();
+    if (fichaAbierta && !sub.some(function(p){ return p.id === fichaAbierta; })) fichaAbierta = null;
+
+    var lista = sub.slice();
+    if (orden.col){
+      lista.sort(function(a,b){
+        var va = a[orden.col], vb = b[orden.col];
+        if (orden.col === "nombre") return va.localeCompare(vb) * orden.dir;
+        return (va - vb) * orden.dir;
+      });
+    }
+
+    var html = "";
+    lista.forEach(function(p){
+      var montoCell = (p.monto_usd !== null)
+        ? '<strong>' + usd(p.monto_usd) + '</strong>'
+        : '<span class="monto-nd">' + I18N.monto_nd[idioma] + '</span>';
+      var abierta = fichaAbierta === p.id;
+      html += '<tr class="fila-prog" data-id="' + p.id + '">' +
+        '<td><span class="prog-nombre"><span class="punto-tipo" style="background:' + p.color + ';"></span>' + p.nombre + '</span></td>' +
+        '<td><span class="badge-tipo" style="border-color:' + p.color + ';color:' + p.color + ';">' + tipoLabel(p.tipo_intervencion) + '</span></td>' +
+        '<td style="max-width:200px;">' + p.donante + '</td>' +
+        '<td style="max-width:180px;">' + montoCell + '</td>' +
+        '<td>' + (p.ha > 0 ? fmt(p.ha) : "N/D") + '</td>' +
+        '<td>' + (typeof p.kpis.personas === "number" ? fmt(p.kpis.personas) : "N/D") + '</td>' +
+        '<td>' + (typeof p.kpis.organizaciones === "number" ? fmt(p.kpis.organizaciones) : "N/D") + '</td>' +
+        '<td>' + (typeof p.kpis.especies === "number" ? fmt(p.kpis.especies) : "N/D") + '</td>' +
+        '<td><span class="badge-sem"><span class="circ" style="background:' + SEM_COLOR[p.semaforo] + ';"></span>' + SEM_TXT[p.semaforo][idioma] + '</span></td>' +
+        '<td><span class="cumpl-celda"><span class="barra-prog"><span class="relleno" style="width:' + p.cumplimiento_pct + '%;background:' + SEM_COLOR[p.semaforo] + ';"></span></span><span class="pct">' + p.cumplimiento_pct + '%</span></span></td>' +
+        '<td><button type="button" class="btn-ficha" data-ficha="' + p.id + '" aria-expanded="' + abierta + '" aria-label="' + (abierta ? I18N.cerrar_ficha[idioma] : I18N.ver_ficha[idioma]) + ' — ' + p.nombre + '">' + (abierta ? I18N.cerrar_ficha[idioma] : I18N.ver_ficha[idioma]) + '</button></td>' +
+      '</tr>';
+      if (abierta) html += filaFicha(p);
+    });
+    $("#tabla-cuerpo").innerHTML = html;
+
+    /* animar apertura de la ficha en el siguiente frame */
+    var anim = $("#tabla-cuerpo .ficha-anim");
+    if (anim) requestAnimationFrame(function(){ anim.classList.add("abierta"); });
+
+    /* flechas de orden en encabezados */
+    $$("thead th.ordenable").forEach(function(th){
+      var base = I18N[th.getAttribute("data-i18n")][idioma];
+      th.innerHTML = base + (orden.col === th.getAttribute("data-orden")
+        ? ' <span class="flecha">' + (orden.dir === 1 ? "▲" : "▼") + '</span>' : "");
+    });
+  }
+
+  function filaFicha(p){
+    var fin;
+    if (p.avance_financiero){
+      var pct = Math.round(p.avance_financiero.ejercido / p.avance_financiero.presupuesto * 100);
+      fin = '<div class="fin-barra"><div class="relleno" style="width:' + pct + '%;"></div></div>' +
+            '<p class="fin-texto"><strong>' + usd(p.avance_financiero.ejercido) + '</strong> ' + I18N.fin_de[idioma] + ' <strong>' + usd(p.avance_financiero.presupuesto) + '</strong> (' + pct + '%)</p>';
+    } else {
+      fin = '<span class="badge-patrimonial">' + I18N.fin_nd[idioma] + '</span>';
+    }
+    var docs = p.documentos.map(function(d){
+      return '<div class="doc-fila">' +
+        '<span class="doc-nombre">📄 ' + d + '</span>' +
+        '<button type="button" class="btn-doc" data-doc="' + d + '" data-prog="' + p.nombre + '" aria-label="' + I18N.descargar[idioma] + ' ' + d + '">' + I18N.descargar[idioma] + '</button>' +
+      '</div>';
+    }).join("");
+    var estados = (idioma === "en" && p.estados_en) ? p.estados_en : p.estados;
+    var desc = (idioma === "en" && p.descripcion_en) ? p.descripcion_en : p.descripcion;
+    return '<tr class="fila-ficha"><td colspan="11">' +
+      '<div class="ficha-anim">' +
+        '<div class="ficha-inner">' +
+          '<p class="ficha-contexto"><strong>' + estados + '</strong> · ' + desc + '</p>' +
+          '<div class="ficha-bloque">' +
+            '<h4>' + I18N.fin_titulo[idioma] + '</h4>' + fin +
+          '</div>' +
+          '<div class="ficha-bloque">' +
+            '<h4>' + I18N.cumpl_titulo[idioma] + '</h4>' +
+            '<div class="fin-barra"><div class="relleno" style="width:' + p.cumplimiento_pct + '%;background:' + SEM_COLOR[p.semaforo] + ';"></div></div>' +
+            '<p class="fin-texto"><strong>' + p.cumplimiento_pct + '%</strong> <span class="ilustrativo">' + I18N.g4_sub[idioma] + '</span></p>' +
+          '</div>' +
+          '<div class="ficha-bloque">' +
+            '<h4>' + I18N.sem_titulo[idioma] + '</h4>' +
+            '<span class="badge-sem-grande ' + p.semaforo + '" style="background:' + SEM_COLOR[p.semaforo] + ';">● ' + SEM_TXT[p.semaforo][idioma] + '</span>' +
+          '</div>' +
+          '<div class="ficha-bloque">' +
+            '<h4>' + I18N.hito_titulo[idioma] + '</h4>' +
+            '<p style="font-size:13px;">' + p.proximo_hito[idioma] + ' <span class="ilustrativo">' + I18N.g4_sub[idioma] + '</span></p>' +
+          '</div>' +
+          '<div class="ficha-bloque" style="grid-column:1 / -1;">' +
+            '<h4>' + I18N.docs_titulo[idioma] + '</h4>' +
+            '<div class="docs-lista">' + docs + '</div>' +
+          '</div>' +
+          '<p class="ficha-mapa-link"><a href="mapa_impacto_fmcn.html" aria-label="' + I18N.ver_mapa[idioma] + '">' + I18N.ver_mapa[idioma] + '</a></p>' +
+        '</div>' +
+      '</div>' +
+    '</td></tr>';
+  }
+
+  /* ============ i18n estático ============ */
+  function aplicarIdioma(){
+    document.documentElement.lang = idioma;
+    $$("[data-i18n]").forEach(function(el){
+      var k = el.getAttribute("data-i18n");
+      if (I18N[k]) el.textContent = I18N[k][idioma];
+    });
+    $("#lang-es").setAttribute("aria-pressed", idioma === "es" ? "true" : "false");
+    $("#lang-en").setAttribute("aria-pressed", idioma === "en" ? "true" : "false");
+    $("#fecha-build").textContent = new Date().toLocaleDateString(
+      idioma === "es" ? "es-MX" : "en-US", { year:"numeric", month:"long", day:"numeric" });
+    renderTodo();
+  }
+
+  /* ============ Render maestro ============ */
+  function renderTodo(){
+    renderKpisPub();
+    renderKpisPriv(); /* Zona 1b: nunca cambia con filtros — solo re-render por idioma */
+    renderPills();
+    renderDropdown();
+    updateCharts();
+    renderTabla();
+  }
+
+  /* ============ Eventos ============ */
+  $("#pills-tipo").addEventListener("click", function(e){
+    var btn = e.target.closest(".pill");
+    if (!btn) return;
+    var t = btn.getAttribute("data-tipo");
+    if (t === "todos"){ tiposActivos = []; }
+    else {
+      var i = tiposActivos.indexOf(t);
+      if (i === -1) tiposActivos.push(t); else tiposActivos.splice(i,1);
+      if (tiposActivos.length === TIPOS.length) tiposActivos = [];
+    }
+    renderTodo();
+  });
+  $("#filtro-donante").addEventListener("change", function(e){
+    donanteActivo = e.target.value;
+    renderTodo();
+  });
+  $("#btn-limpiar").addEventListener("click", function(){
+    tiposActivos = []; donanteActivo = "todos";
+    renderTodo();
+  });
+
+  $("#tabla-cuerpo").addEventListener("click", function(e){
+    var doc = e.target.closest(".btn-doc");
+    if (doc){
+      console.log("descargar: " + doc.getAttribute("data-doc") + " — " + doc.getAttribute("data-prog"));
+      return;
+    }
+    var btn = e.target.closest(".btn-ficha");
+    if (btn){
+      var id = btn.getAttribute("data-ficha");
+      fichaAbierta = (fichaAbierta === id) ? null : id; /* solo una a la vez */
+      renderTabla();
+    }
+  });
+
+  $$("thead th.ordenable").forEach(function(th){
+    function ordenar(){
+      var col = th.getAttribute("data-orden");
+      if (orden.col === col){ orden.dir *= -1; } else { orden.col = col; orden.dir = (col === "nombre") ? 1 : -1; }
+      renderTabla();
+    }
+    th.addEventListener("click", ordenar);
+    th.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); ordenar(); } });
+  });
+
+  $("#lang-es").addEventListener("click", function(){ idioma = "es"; aplicarIdioma(); });
+  $("#lang-en").addEventListener("click", function(){ idioma = "en"; aplicarIdioma(); });
+
+  $("#btn-csv").addEventListener("click", function(){ console.log("exportar: csv"); });
+  $("#btn-pdf").addEventListener("click", function(){ console.log("exportar: pdf"); });
+
+  /* ============ Init ============ */
+  initCharts();
+  aplicarIdioma();
+})();
+</script>
+</body>
+</html>
